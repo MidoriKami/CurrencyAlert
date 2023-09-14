@@ -1,5 +1,5 @@
 {
-  "Author": "Lharz",
+  "Author": "MidoriKami, Lharz",
   "Name": "CurrencyAlert",
   "Punchline": "Display alerts upon reaching configurable currencies thresholds (such as Poetics or PVP marks).",
   "Description": "This plugin lets you easily manage your various currencies to prevent from wasting precious resources.",
@@ -14,5 +14,5 @@
     "Other",
 	"UI"
   ],
-  "RepoUrl": "https://github.com/Lharz/xiv-currency-alert"
+  "RepoUrl": "https://github.com/MidoriKami/CurrencyAlert"
 }
