@@ -79,12 +79,12 @@ public class ConfigurationWindow : TabbedSelectionWindow
     protected override IEnumerable<ISelectionWindowTab> GetTabs() => tabs;
     protected override IEnumerable<ITabItem> GetRegularTabs() => regularTabs;
 
-    // public override bool DrawConditions()
-    // {
-    //     if (!Service.ClientState.IsLoggedIn) return false;
-    //
-    //     return true;
-    // }
+    public override bool DrawConditions()
+    {
+        if (!Service.ClientState.IsLoggedIn) return false;
+    
+        return true;
+    }
 
     protected override void DrawExtras()
     {
