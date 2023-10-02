@@ -9,14 +9,12 @@ namespace CurrencyAlert;
 
 public sealed class CurrencyAlertPlugin : IDalamudPlugin
 {
-    public string Name => "CurrencyAlert";
-
     public static CurrencyAlertSystem System = null!;
 
     public CurrencyAlertPlugin(DalamudPluginInterface pluginInterface)
     {
         pluginInterface.Create<Service>();
-        KamiCommon.Initialize(pluginInterface, Name);
+        KamiCommon.Initialize(pluginInterface, "CurrencyAlert");
 
         System = new CurrencyAlertSystem();
 
