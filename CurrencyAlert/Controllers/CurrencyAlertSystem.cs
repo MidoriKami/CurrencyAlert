@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using CurrencyAlert.Models;
 using CurrencyAlert.Models.Config;
@@ -11,7 +10,6 @@ namespace CurrencyAlert.Controllers;
 public class CurrencyAlertSystem : IDisposable
 {
     public static Configuration Config = null!;
-    private static readonly Stopwatch LockoutTimer = new();
 
     public CurrencyAlertSystem()
     {
