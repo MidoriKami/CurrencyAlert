@@ -164,28 +164,46 @@ public class CurrencyOverlay : Window
             switch (textEnabled, iconEnabled)
             {
                 case { textEnabled: true, iconEnabled: true }:
+                    ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f * ImGuiHelpers.GlobalScale);
                     ImGui.SetCursorPosX(workingPosition.X + windowWidth - textSize.X - ImGui.GetStyle().ItemSpacing.X - IconSize);
                     ImGui.TextColored(textColor, text);
                     ImGui.SameLine();
+                    ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3.0f * ImGuiHelpers.GlobalScale);
                     ImGui.Image(icon.ImGuiHandle, new Vector2(IconSize));
                     break;
 
                 case { textEnabled: true, iconEnabled: false }:
                     ImGui.SetCursorPosX(workingPosition.X + windowWidth - textSize.X);
+                    ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f * ImGuiHelpers.GlobalScale);
                     ImGui.TextColored(textColor, text);
                     break;
 
                 case { textEnabled: false, iconEnabled: true }:
                     ImGui.SetCursorPosX(workingPosition.X + windowWidth - IconSize);
+                    ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f * ImGuiHelpers.GlobalScale);
                     ImGui.Image(icon.ImGuiHandle, new Vector2(IconSize));
                     break;
             }
         }
         else
         {
-            if (iconEnabled) ImGui.Image(icon.ImGuiHandle, new Vector2(IconSize));
-            if (textEnabled && iconEnabled) ImGui.SameLine();
-            if (textEnabled) ImGui.TextColored(textColor, text);
+            if (iconEnabled)
+            {
+                ImGui.Image(icon.ImGuiHandle, new Vector2(IconSize));
+            }
+            if (textEnabled && iconEnabled)
+            {
+                ImGui.SameLine();
+                ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f * ImGuiHelpers.GlobalScale);
+            }
+            if (textEnabled && !iconEnabled)
+            {
+                ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f * ImGuiHelpers.GlobalScale);
+            }
+            if (textEnabled)
+            {
+                ImGui.TextColored(textColor, text);
+            }
         }
     }
 
