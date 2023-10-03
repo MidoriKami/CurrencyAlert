@@ -199,7 +199,7 @@ public class CurrencyOverlay : Window
         => GetActiveCurrencies(currencies).Select(GetLineWidth);
     
     private static IEnumerable<TrackedCurrency> GetActiveCurrencies(IEnumerable<TrackedCurrency> currencies)
-        => currencies.Where(currency => currency.CurrentCount > currency.Threshold || CurrencyAlertSystem.Config.RepositionMode);
+        => currencies.Where(currency => currency.CurrentCount > currency.Threshold && currency.ShowInOverlay || CurrencyAlertSystem.Config.RepositionMode);
 
     private float GetLineWidth(TrackedCurrency currency) => CurrencyAlertSystem.Config switch
     {
