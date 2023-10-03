@@ -42,10 +42,10 @@ public class GeneralSettingsTab : ITabItem
             CurrencyAlertSystem.Config.Save();
         }
         
-        if (ImGui.Checkbox("Grow Upwards", ref CurrencyAlertSystem.Config.GrowUp))
-        {
-            CurrencyAlertSystem.Config.Save();
-        }
+        // if (ImGui.Checkbox("Grow Upwards", ref CurrencyAlertSystem.Config.GrowUp))
+        // {
+        //     CurrencyAlertSystem.Config.Save();
+        // }
         
         if (ImGui.Checkbox("Show Icon", ref CurrencyAlertSystem.Config.OverlayIcon))
         {
