@@ -19,6 +19,7 @@ public sealed class CurrencyAlertPlugin : IDalamudPlugin
         System = new CurrencyAlertSystem();
 
         CommandController.RegisterMainCommand("/calert", "/currencyalert");
+        
         KamiCommon.WindowManager.AddConfigurationWindow(new ConfigurationWindow(), true);
         KamiCommon.WindowManager.AddWindow(new CurrencyOverlay());
     }
