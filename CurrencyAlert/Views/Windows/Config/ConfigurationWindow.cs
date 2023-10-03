@@ -71,10 +71,6 @@ public class ConfigurationWindow : TabbedSelectionWindow
         };
 
         CommandController.RegisterCommands(this);
-
-#if DEBUG
-        IsOpen = true;
-#endif
     }   
     
     protected override IEnumerable<ISelectionWindowTab> GetTabs() => tabs;
