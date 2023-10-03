@@ -3,7 +3,7 @@ using CurrencyAlert.Views.Windows.Config;
 using CurrencyAlert.Views.Windows.Overlay;
 using Dalamud.Plugin;
 using KamiLib;
-using KamiLib.Commands;
+using KamiLib.System;
 
 namespace CurrencyAlert;
 

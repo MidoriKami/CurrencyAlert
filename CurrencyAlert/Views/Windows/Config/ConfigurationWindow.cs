@@ -8,10 +8,11 @@ using CurrencyAlert.Views.Windows.WindowTabs;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using ImGuiNET;
-using KamiLib.Commands;
+using KamiLib.Command;
 using KamiLib.Interfaces;
 using KamiLib.Search;
-using KamiLib.Windows;
+using KamiLib.System;
+using KamiLib.UserInterface;
 
 namespace CurrencyAlert.Views.Windows.Config;
 
