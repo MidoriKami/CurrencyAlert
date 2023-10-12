@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using CurrencyAlert.Controllers;
 using CurrencyAlert.Models;
@@ -33,7 +34,7 @@ public class CurrencyOverlay : Window
         ForceMainWindow = true;
     }
 
-    public override void PreOpenCheck() => IsOpen = CurrencyAlertSystem.Config.OverlayEnabled;
+    public override void PreOpenCheck() => IsOpen = CurrencyAlertSystem.Config.OverlayEnabled && (HasActiveWarnings(Currencies) || CurrencyAlertSystem.Config.RepositionMode );
 
     public override void PreDraw()
     {
@@ -59,7 +60,7 @@ public class CurrencyOverlay : Window
         
         foreach (var currency in Currencies)
         {
-            if (currency is { ShowInOverlay: true, Enabled: true } && currency.CurrentCount > currency.Threshold || CurrencyAlertSystem.Config.RepositionMode)
+            if (currency is { ShowInOverlay: true, Enabled: true, HasWarning: true } || CurrencyAlertSystem.Config.RepositionMode)
             {
                 DrawCurrency(currency);
             }
@@ -121,4 +122,7 @@ public class CurrencyOverlay : Window
 
     private static string GetLabelForCurrency(TrackedCurrency currency, bool longLabel)
         => longLabel ? $"{currency.Name} is above threshold" : $"{currency.Name}";
+
+    private static bool HasActiveWarnings(IEnumerable<TrackedCurrency> currencies)
+        => currencies.Any(currency => currency is { HasWarning: true, Enabled: true, ShowInOverlay: true});
 }
