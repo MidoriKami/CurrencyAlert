@@ -35,9 +35,9 @@ public class CurrencyConfigView
             < 0.85f => currency.Invert ? KnownColor.Red.Vector() : KnownColor.Orange.Vector(),
             < 0.95f => currency.Invert ? KnownColor.Red.Vector() : KnownColor.OrangeRed.Vector(),
             > 0.95f and < 1.00f => KnownColor.Red.Vector(),
-            > 1.00f and < 1.05f => currency.Invert ? KnownColor.OrangeRed.Vector() : KnownColor.Red.Vector(),
-            > 1.05f and < 1.15f => currency.Invert ? KnownColor.Orange.Vector() : KnownColor.Red.Vector(),
-            > 1.15f and < 1.25f => currency.Invert ? KnownColor.White.Vector() : KnownColor.Red.Vector(),
+            >= 1.00f and < 1.05f => currency.Invert ? KnownColor.OrangeRed.Vector() : KnownColor.Red.Vector(),
+            >= 1.05f and < 1.15f => currency.Invert ? KnownColor.Orange.Vector() : KnownColor.Red.Vector(),
+            >= 1.15f => currency.Invert ? KnownColor.White.Vector() : KnownColor.Red.Vector(),
             _ => KnownColor.White.Vector(),
         };
         
