@@ -31,10 +31,13 @@ public class CurrencyConfigView
         if (currency is not { CurrentCount: var currentCount, Threshold: var threshold }) return;
         
         var color = ((float)currentCount / threshold) switch {
-            < 0.75f => KnownColor.White.Vector(),
-            < 0.85f => KnownColor.Orange.Vector(),
-            < 0.95f => KnownColor.OrangeRed.Vector(),
-            >= 0.95f => KnownColor.Red.Vector(),
+            < 0.75f => currency.Invert ? KnownColor.Red.Vector() : KnownColor.White.Vector(),
+            < 0.85f => currency.Invert ? KnownColor.Red.Vector() : KnownColor.Orange.Vector(),
+            < 0.95f => currency.Invert ? KnownColor.Red.Vector() : KnownColor.OrangeRed.Vector(),
+            > 0.95f and < 1.00f => KnownColor.Red.Vector(),
+            > 1.00f and < 1.05f => currency.Invert ? KnownColor.OrangeRed.Vector() : KnownColor.Red.Vector(),
+            > 1.05f and < 1.15f => currency.Invert ? KnownColor.Orange.Vector() : KnownColor.Red.Vector(),
+            > 1.15f and < 1.25f => currency.Invert ? KnownColor.White.Vector() : KnownColor.Red.Vector(),
             _ => KnownColor.White.Vector(),
         };
         
@@ -81,7 +84,7 @@ public class CurrencyConfigView
     
     private void DrawSettings()
     {
-        if (currency is not { ItemId: var itemId, Enabled: var enabled, ChatWarning: var chatWarning, ShowInOverlay: var overlay, Threshold: var threshold }) return;
+        if (currency is not { ItemId: var itemId, Enabled: var enabled, ChatWarning: var chatWarning, ShowInOverlay: var overlay, Invert: var invert, Threshold: var threshold }) return;
         
         if (ImGui.Checkbox($"Enable##{itemId}", ref enabled))
         {
@@ -104,6 +107,13 @@ public class CurrencyConfigView
             CurrencyAlertSystem.Config.Save();
         }
         ImGuiComponents.HelpMarker("Allows this currency to show in the overlay");
+        
+        if (ImGui.Checkbox($"Invert##{itemId}", ref invert))
+        {
+            currency.Invert = invert;
+            CurrencyAlertSystem.Config.Save();
+        }
+        ImGuiComponents.HelpMarker("Warn when below the threshold instead of above");
         
         ImGuiHelpers.ScaledDummy(5.0f);
 

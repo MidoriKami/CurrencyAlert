@@ -34,6 +34,8 @@ public unsafe class TrackedCurrency
     
     public bool ShowInOverlay { get; set; }
 
+    public bool Invert { get; set; } = false;
+    
     [JsonIgnore] 
     public string Name => label ??= Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId)?.Name ?? "Unable to read name";
 
@@ -44,8 +46,8 @@ public unsafe class TrackedCurrency
     public int CurrentCount => InventoryManager.Instance()->GetInventoryItemCount(ItemId, Type is CurrencyType.HighQualityItem, false, false);
 
     [JsonIgnore]
-    public bool HasWarning => CurrentCount > Threshold;
-    
+    public bool HasWarning => Invert ? CurrentCount < Threshold : CurrentCount > Threshold;
+
     private uint GetItemId()
     {
         itemId ??= Type switch

@@ -70,6 +70,8 @@ public class ConfigurationWindow : TabbedSelectionWindow
             }
         };
 
+        ShowScrollBar = false;
+
         CommandController.RegisterCommands(this);
     }   
     

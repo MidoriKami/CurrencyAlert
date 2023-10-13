@@ -121,7 +121,7 @@ public class CurrencyOverlay : Window
     }
 
     private static string GetLabelForCurrency(TrackedCurrency currency, bool longLabel)
-        => longLabel ? $"{currency.Name} is above threshold" : $"{currency.Name}";
+        => longLabel ? $"{currency.Name} is {(currency.Invert ? "below" : "above")} threshold" : $"{currency.Name}";
 
     private static bool HasActiveWarnings(IEnumerable<TrackedCurrency> currencies)
         => currencies.Any(currency => currency is { HasWarning: true, Enabled: true, ShowInOverlay: true});
