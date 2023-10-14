@@ -36,7 +36,7 @@ public class CurrencyAlertSystem : IDisposable
     {
         if (Config is { ChatWarning: false }) return;
         
-        foreach (var currency in Config.Currencies.Where(currency => currency.CurrentCount > currency.Threshold && currency.ChatWarning))
+        foreach (var currency in Config.Currencies.Where(currency => currency is { HasWarning: true, ChatWarning: true }))
         {
             Service.ChatGui.Print($"{currency.Name} is {(currency.Invert ? "below" : "above")} threshold.", "CurrencyAlert", 43);
         }
