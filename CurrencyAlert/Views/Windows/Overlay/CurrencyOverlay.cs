@@ -27,7 +27,7 @@ public class CurrencyOverlay : Window
     private static float IconSize => 24.0f * ImGuiHelpers.GlobalScale;
     private List<TrackedCurrency> Currencies => CurrencyAlertSystem.Config is { RepositionMode: true } ? previewCurrencies : CurrencyAlertSystem.Config.Currencies;
     
-    public CurrencyOverlay() : base("CurrencyAlert - Overlay Window2")
+    public CurrencyOverlay() : base("CurrencyAlert - Overlay Window")
     {
         Flags |= ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar;
 
