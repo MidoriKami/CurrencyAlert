@@ -34,7 +34,10 @@ public class CurrencyOverlay : Window
         ForceMainWindow = true;
     }
 
-    public override void PreOpenCheck() => IsOpen = CurrencyAlertSystem.Config.OverlayEnabled && (HasActiveWarnings(Currencies) || CurrencyAlertSystem.Config.RepositionMode );
+    public override void PreOpenCheck() 
+        => IsOpen = CurrencyAlertSystem.Config.OverlayEnabled && 
+                    (HasActiveWarnings(Currencies) || CurrencyAlertSystem.Config.RepositionMode) && 
+                    Service.ClientState.IsLoggedIn;
 
     public override void PreDraw()
     {
