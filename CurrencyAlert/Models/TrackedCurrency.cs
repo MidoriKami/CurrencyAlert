@@ -9,8 +9,7 @@ using Newtonsoft.Json;
 
 namespace CurrencyAlert.Models;
 
-public unsafe class TrackedCurrency
-{
+public unsafe class TrackedCurrency {
     private IDalamudTextureWrap? iconTexture;
     private uint? itemId;
     private string? label;
@@ -20,8 +19,7 @@ public unsafe class TrackedCurrency
     [JsonIgnore] 
     public IDalamudTextureWrap? Icon => GetIcon();
 
-    public uint ItemId
-    {
+    public uint ItemId {
         get => GetItemId();
         init => itemId = value;
     }
@@ -48,10 +46,8 @@ public unsafe class TrackedCurrency
     [JsonIgnore]
     public bool HasWarning => Invert ? CurrentCount < Threshold : CurrentCount > Threshold;
 
-    private uint GetItemId()
-    {
-        itemId ??= Type switch
-        {
+    private uint GetItemId() {
+        itemId ??= Type switch {
             CurrencyType.NonLimitedTomestone => Service.DataManager.GetExcelSheet<TomestonesItem>()!.First(item => item.Tomestones.Row is 2).Item.Row,
             CurrencyType.LimitedTomestone => Service.DataManager.GetExcelSheet<TomestonesItem>()!.First(item => item.Tomestones.Row is 3).Item.Row,
             _ => throw new Exception($"ItemId not initialized for type: {Type}")
@@ -60,12 +56,9 @@ public unsafe class TrackedCurrency
         return itemId.Value;
     }
 
-    private IDalamudTextureWrap? GetIcon()
-    {
-        if (iconTexture is null && Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId) is { Icon: var iconId })
-        {
-            var iconFlags = Type switch
-            {
+    private IDalamudTextureWrap? GetIcon() {
+        if (iconTexture is null && Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId) is { Icon: var iconId }) {
+            var iconFlags = Type switch {
                 CurrencyType.HighQualityItem => ITextureProvider.IconFlags.HiRes | ITextureProvider.IconFlags.ItemHighQuality,
                 _ => ITextureProvider.IconFlags.HiRes,
             };

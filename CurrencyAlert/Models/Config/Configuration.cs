@@ -7,8 +7,7 @@ using Newtonsoft.Json;
 
 namespace CurrencyAlert.Models.Config;
 
-public class Configuration : IPluginConfiguration
-{
+public class Configuration : IPluginConfiguration {
     public int Version { get; set; } = 7;
 
     public List<TrackedCurrency> Currencies = new();

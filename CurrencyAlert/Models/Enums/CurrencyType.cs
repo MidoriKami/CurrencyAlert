@@ -1,7 +1,6 @@
 ﻿namespace CurrencyAlert.Models.Enums;
 
-public enum CurrencyType
-{
+public enum CurrencyType {
     Item,
     HighQualityItem,
     Collectable,

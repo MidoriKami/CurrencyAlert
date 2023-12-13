@@ -5,13 +5,11 @@ using KamiLib.Interfaces;
 
 namespace CurrencyAlert.Views.Windows.WindowTabs;
 
-public class GeneralSettingsTab : ITabItem
-{
+public class GeneralSettingsTab : ITabItem {
     public string TabName => "Settings";
     public bool Enabled => true;
 
-    public void Draw()
-    {
+    public void Draw() {
         var settingsChange = false;
         
         ImGui.Text("General Settings");
@@ -41,8 +39,7 @@ public class GeneralSettingsTab : ITabItem
         settingsChange |= ImGui.ColorEdit4("Text Color", ref CurrencyAlertSystem.Config.OverlayTextColor, ImGuiColorEditFlags.AlphaPreviewHalf);
         settingsChange |= ImGui.ColorEdit4("Background Color", ref CurrencyAlertSystem.Config.BackgroundColor, ImGuiColorEditFlags.AlphaPreviewHalf);
 
-        if (ImGui.DragFloat2("Overlay Position", ref CurrencyAlertSystem.Config.OverlayDrawPosition, 5.0f))
-        {
+        if (ImGui.DragFloat2("Overlay Position", ref CurrencyAlertSystem.Config.OverlayDrawPosition, 5.0f)) {
             CurrencyAlertSystem.Config.WindowPosChanged = true;
             settingsChange = true;
         }

@@ -10,24 +10,20 @@ using ImGuiNET;
 
 namespace CurrencyAlert.Views.Views;
 
-public class CurrencyConfigView
-{
+public class CurrencyConfigView {
     private readonly TrackedCurrency currency;
 
-    public CurrencyConfigView(TrackedCurrency currency)
-    {
+    public CurrencyConfigView(TrackedCurrency currency) {
         this.currency = currency;
     }
 
-    public void Draw()
-    {
+    public void Draw() {
         DrawHeaderAndWatermark();
         DrawCurrentStatus();
         DrawSettings();
     }
 
-    private void DrawCurrentStatus()
-    {
+    private void DrawCurrentStatus() {
         if (currency is not { CurrentCount: var currentCount, Threshold: var threshold }) return;
         
         var color = ((float)currentCount / threshold) switch {
@@ -41,8 +37,7 @@ public class CurrencyConfigView
             _ => KnownColor.White.Vector(),
         };
         
-        if (ImGui.BeginTable("CurrentStatusTable", 3))
-        {
+        if (ImGui.BeginTable("CurrentStatusTable", 3)) {
             ImGui.TableSetupColumn("##CurrentAmount", ImGuiTableColumnFlags.WidthStretch);
             ImGui.TableSetupColumn("##Slash", ImGuiTableColumnFlags.WidthFixed, 5.0f * ImGuiHelpers.GlobalScale);
             ImGui.TableSetupColumn("##ThresholdAmount", ImGuiTableColumnFlags.WidthStretch);
@@ -64,8 +59,7 @@ public class CurrencyConfigView
         ImGuiHelpers.ScaledDummy(10.0f);
     }
 
-    private void DrawHeaderAndWatermark()
-    {
+    private void DrawHeaderAndWatermark() {
         if (currency is not { Name: var name, Icon: {} icon}) return;
         
         var region = ImGui.GetContentRegionAvail();
@@ -82,34 +76,29 @@ public class CurrencyConfigView
         ImGui.SetCursorPos(areaStart);
     }
     
-    private void DrawSettings()
-    {
+    private void DrawSettings() {
         if (currency is not { ItemId: var itemId, Enabled: var enabled, ChatWarning: var chatWarning, ShowInOverlay: var overlay, Invert: var invert, Threshold: var threshold }) return;
         
-        if (ImGui.Checkbox($"Enable##{itemId}", ref enabled))
-        {
+        if (ImGui.Checkbox($"Enable##{itemId}", ref enabled)) {
             currency.Enabled = enabled;
             CurrencyAlertSystem.Config.Save();
         }
 
         ImGuiHelpers.ScaledDummy(5.0f);
         
-        if (ImGui.Checkbox($"Chat Warning##{itemId}", ref chatWarning))
-        {
+        if (ImGui.Checkbox($"Chat Warning##{itemId}", ref chatWarning)) {
             currency.ChatWarning = chatWarning;
             CurrencyAlertSystem.Config.Save();
         }
         ImGuiComponents.HelpMarker("When amount is above threshold, print a message to chat when changing zones");
 
-        if (ImGui.Checkbox($"Overlay##{itemId}", ref overlay))
-        {
+        if (ImGui.Checkbox($"Overlay##{itemId}", ref overlay)) {
             currency.ShowInOverlay = overlay;
             CurrencyAlertSystem.Config.Save();
         }
         ImGuiComponents.HelpMarker("Allows this currency to show in the overlay");
         
-        if (ImGui.Checkbox($"Invert##{itemId}", ref invert))
-        {
+        if (ImGui.Checkbox($"Invert##{itemId}", ref invert)) {
             currency.Invert = invert;
             CurrencyAlertSystem.Config.Save();
         }
@@ -118,8 +107,7 @@ public class CurrencyConfigView
         ImGuiHelpers.ScaledDummy(5.0f);
 
         ImGui.PushItemWidth(50.0f * ImGuiHelpers.GlobalScale);
-        if (ImGui.InputInt($"Threshold##{itemId}", ref threshold, 0, 0))
-        {
+        if (ImGui.InputInt($"Threshold##{itemId}", ref threshold, 0, 0)) {
             currency.Threshold = threshold;
             CurrencyAlertSystem.Config.Save();
         }
@@ -130,8 +118,7 @@ public class CurrencyConfigView
         if (!hotkeyHeld) ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
 
         ImGui.PushFont(UiBuilder.IconFont);
-        if (ImGui.Button(FontAwesomeIcon.Trash.ToIconString(), new Vector2(ImGui.GetContentRegionAvail().X, 23.0f * ImGuiHelpers.GlobalScale)) && hotkeyHeld && currency.CanRemove)
-        {
+        if (ImGui.Button(FontAwesomeIcon.Trash.ToIconString(), new Vector2(ImGui.GetContentRegionAvail().X, 23.0f * ImGuiHelpers.GlobalScale)) && hotkeyHeld && currency.CanRemove) {
             CurrencyAlertSystem.Config.Currencies.Remove(currency);
             CurrencyAlertSystem.Config.Save();
         }
@@ -139,8 +126,7 @@ public class CurrencyConfigView
         
         if (!hotkeyHeld) ImGui.PopStyleVar();
         
-        if (ImGui.IsItemHovered() && !hotkeyHeld)
-        {
+        if (ImGui.IsItemHovered() && !hotkeyHeld) {
             ImGui.SetTooltip(currency.CanRemove ? "Hold Shift + Control while clicking to delete this currency" : "Special currencies cannot be removed");
         }
     }

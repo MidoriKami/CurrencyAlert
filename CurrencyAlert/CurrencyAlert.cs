@@ -7,12 +7,10 @@ using KamiLib.System;
 
 namespace CurrencyAlert;
 
-public sealed class CurrencyAlertPlugin : IDalamudPlugin
-{
+public sealed class CurrencyAlertPlugin : IDalamudPlugin {
     public static CurrencyAlertSystem System = null!;
 
-    public CurrencyAlertPlugin(DalamudPluginInterface pluginInterface)
-    {
+    public CurrencyAlertPlugin(DalamudPluginInterface pluginInterface) {
         pluginInterface.Create<Service>();
         KamiCommon.Initialize(pluginInterface, "CurrencyAlert");
 
@@ -24,8 +22,7 @@ public sealed class CurrencyAlertPlugin : IDalamudPlugin
         KamiCommon.WindowManager.AddWindow(new CurrencyOverlay());
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         KamiCommon.Dispose();
 
         System.Dispose();

@@ -7,8 +7,7 @@ using KamiLib.Interfaces;
 
 namespace CurrencyAlert.Views.Windows.WindowTabs;
 
-public class CurrencyConfigurationTab : ISelectionWindowTab
-{
+public class CurrencyConfigurationTab : ISelectionWindowTab {
     public string TabName => "Currencies";
     public ISelectable? LastSelection { get; set; }
 
@@ -16,8 +15,7 @@ public class CurrencyConfigurationTab : ISelectionWindowTab
         .Select(currency => new TrackedCurrencySelectable(currency));
 }
 
-public class TrackedCurrencySelectable : ISelectable, IDrawable
-{
+public class TrackedCurrencySelectable : ISelectable, IDrawable {
     public IDrawable Contents => this;
 
     public string ID => currency.ItemId.ToString();
@@ -26,8 +24,7 @@ public class TrackedCurrencySelectable : ISelectable, IDrawable
     private readonly CurrencySelectableView label;
     private readonly CurrencyConfigView config;
     
-    public TrackedCurrencySelectable(TrackedCurrency currency)
-    {
+    public TrackedCurrencySelectable(TrackedCurrency currency) {
         this.currency = currency;
         label = new CurrencySelectableView(this.currency);
         config = new CurrencyConfigView(this.currency);

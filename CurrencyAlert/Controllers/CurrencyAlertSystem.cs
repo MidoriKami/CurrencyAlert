@@ -7,16 +7,13 @@ using CurrencyAlert.Models.Enums;
 
 namespace CurrencyAlert.Controllers;
 
-public class CurrencyAlertSystem : IDisposable
-{
+public class CurrencyAlertSystem : IDisposable {
     public static Configuration Config = null!;
 
-    public CurrencyAlertSystem()
-    {
+    public CurrencyAlertSystem() {
         Config = Service.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
 
-        if (Config is { Currencies.Count: 0 } or { Currencies: null } or { Version: not 7 })
-        {
+        if (Config is { Currencies.Count: 0 } or { Currencies: null } or { Version: not 7 }) {
             Service.Log.Verbose("Generating Initial Currency List.");
 
             Config.Currencies = GenerateInitialList();
@@ -27,23 +24,19 @@ public class CurrencyAlertSystem : IDisposable
         Service.ClientState.TerritoryChanged += OnZoneChange;
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         Service.ClientState.TerritoryChanged -= OnZoneChange;
     }
     
-    private void OnZoneChange(ushort e)
-    {
+    private void OnZoneChange(ushort e) {
         if (Config is { ChatWarning: false }) return;
         
-        foreach (var currency in Config.Currencies.Where(currency => currency is { HasWarning: true, ChatWarning: true }))
-        {
+        foreach (var currency in Config.Currencies.Where(currency => currency is { HasWarning: true, ChatWarning: true })) {
             Service.ChatGui.Print($"{currency.Name} is {(currency.Invert ? "below" : "above")} threshold.", "CurrencyAlert", 43);
         }
     }
 
-    private static List<TrackedCurrency> GenerateInitialList() => new()
-    {
+    private static List<TrackedCurrency> GenerateInitialList() => new() {
         new TrackedCurrency { Type = CurrencyType.Item, ItemId = 20, Threshold = 75000, Enabled = true }, // StormSeal
         new TrackedCurrency { Type = CurrencyType.Item, ItemId = 21, Threshold = 75000, Enabled = true }, // SerpentSeal
         new TrackedCurrency { Type = CurrencyType.Item, ItemId = 22, Threshold = 75000, Enabled = true }, // FlameSeal

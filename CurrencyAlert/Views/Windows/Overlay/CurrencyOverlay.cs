@@ -12,8 +12,7 @@ using ImGuiNET;
 
 namespace CurrencyAlert.Views.Windows.Overlay;
 
-public class CurrencyOverlay : Window
-{
+public class CurrencyOverlay : Window {
     private readonly List<TrackedCurrency> previewCurrencies = new() {
         new TrackedCurrency { Type = CurrencyType.Item, ItemId = 28, Threshold = 1400 }, // Poetics
         new TrackedCurrency { Type = CurrencyType.NonLimitedTomestone, Threshold = 1400 }, // NonLimitedTomestone
@@ -27,8 +26,7 @@ public class CurrencyOverlay : Window
     private static float IconSize => 24.0f * ImGuiHelpers.GlobalScale;
     private List<TrackedCurrency> Currencies => CurrencyAlertSystem.Config is { RepositionMode: true } ? previewCurrencies : CurrencyAlertSystem.Config.Currencies;
     
-    public CurrencyOverlay() : base("CurrencyAlert - Overlay Window")
-    {
+    public CurrencyOverlay() : base("CurrencyAlert - Overlay Window") {
         Flags |= ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar;
 
         ForceMainWindow = true;
@@ -39,8 +37,7 @@ public class CurrencyOverlay : Window
                     (HasActiveWarnings(Currencies) || CurrencyAlertSystem.Config.RepositionMode) && 
                     Service.ClientState.IsLoggedIn;
 
-    public override void PreDraw()
-    {
+    public override void PreDraw() {
         Flags |= ImGuiWindowFlags.NoMove;
         if (CurrencyAlertSystem.Config.RepositionMode) Flags &= ~ImGuiWindowFlags.NoMove;
 
@@ -50,27 +47,21 @@ public class CurrencyOverlay : Window
         ImGui.PushStyleColor(ImGuiCol.WindowBg, CurrencyAlertSystem.Config.BackgroundColor);
     }
 
-    public override void Draw()
-    {
-        if (!ImGui.IsWindowFocused() && CurrencyAlertSystem.Config.WindowPosChanged)
-        {
+    public override void Draw() {
+        if (!ImGui.IsWindowFocused() && CurrencyAlertSystem.Config.WindowPosChanged) {
             ImGui.SetWindowPos(CurrencyAlertSystem.Config.OverlayDrawPosition);
         }
-        else
-        {
+        else {
             CurrencyAlertSystem.Config.OverlayDrawPosition = ImGui.GetWindowPos();
         }
         
-        foreach (var currency in Currencies)
-        {
-            if (currency is { ShowInOverlay: true, Enabled: true, HasWarning: true } || CurrencyAlertSystem.Config.RepositionMode)
-            {
+        foreach (var currency in Currencies) {
+            if (currency is { ShowInOverlay: true, Enabled: true, HasWarning: true } || CurrencyAlertSystem.Config.RepositionMode) {
                 DrawCurrency(currency);
             }
         }
 
-        if (CurrencyAlertSystem.Config.RepositionMode)
-        {
+        if (CurrencyAlertSystem.Config.RepositionMode) {
             const string text = "Reposition/Sample Mode Active";
             
             var textSize = ImGui.CalcTextSize(text);
@@ -80,13 +71,11 @@ public class CurrencyOverlay : Window
         }
     }
 
-    public override void PostDraw()
-    {
+    public override void PostDraw() {
         ImGui.PopStyleColor();
     }
 
-    private void DrawCurrency(TrackedCurrency currency)
-    {
+    private void DrawCurrency(TrackedCurrency currency) {
         if (currency is { Icon: null } or { Name: "" }) return;
         
         var icon = currency.Icon;
@@ -96,29 +85,24 @@ public class CurrencyOverlay : Window
         var text = GetLabelForCurrency(currency, longTextLabel);
         var textColor = CurrencyAlertSystem.Config.OverlayTextColor;
         
-        if (iconEnabled)
-        {
+        if (iconEnabled) {
             ImGui.Image(icon.ImGuiHandle, new Vector2(IconSize));
         }
         
-        if (textEnabled && iconEnabled)
-        {
+        if (textEnabled && iconEnabled) {
             ImGui.SameLine();
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f * ImGuiHelpers.GlobalScale);
         }
         
-        if (textEnabled && !iconEnabled)
-        {
+        if (textEnabled && !iconEnabled) {
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f * ImGuiHelpers.GlobalScale);
         }
         
-        if (textEnabled)
-        {
+        if (textEnabled) {
             ImGui.TextColored(textColor, text);
         }
 
-        if (CurrencyAlertSystem.Config.SingleLine)
-        {
+        if (CurrencyAlertSystem.Config.SingleLine) {
             ImGui.SameLine();
         }
     }
