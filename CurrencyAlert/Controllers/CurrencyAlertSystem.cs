@@ -31,7 +31,7 @@ public class CurrencyAlertSystem : IDisposable {
     private void OnZoneChange(ushort e) {
         if (Config is { ChatWarning: false }) return;
         
-        foreach (var currency in Config.Currencies.Where(currency => currency is { HasWarning: true, ChatWarning: true })) {
+        foreach (var currency in Config.Currencies.Where(currency => currency is { HasWarning: true, ChatWarning: true, Enabled: true })) {
             Service.ChatGui.Print($"{currency.Name} is {(currency.Invert ? "below" : "above")} threshold.", "CurrencyAlert", 43);
         }
     }
