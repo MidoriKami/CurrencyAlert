@@ -13,6 +13,7 @@ public class Configuration : IPluginConfiguration {
     public List<TrackedCurrency> Currencies = new();
     
     public bool ChatWarning = false;
+    public bool HideInDuties = false;
     
     public bool OverlayEnabled = false;
     public bool OverlayText = true;

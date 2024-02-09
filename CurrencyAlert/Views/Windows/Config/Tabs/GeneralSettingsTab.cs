@@ -26,6 +26,9 @@ public class GeneralSettingsTab : ITabItem {
         settingsChange |= ImGui.Checkbox("Enabled", ref CurrencyAlertSystem.Config.OverlayEnabled);
         settingsChange |= ImGui.Checkbox("Reposition Mode", ref CurrencyAlertSystem.Config.RepositionMode);
         ImGuiHelpers.ScaledDummy(5.0f);
+        
+        settingsChange |= ImGui.Checkbox("Hide In Duties", ref CurrencyAlertSystem.Config.HideInDuties);
+        ImGuiHelpers.ScaledDummy(5.0f);
 
         settingsChange |= ImGui.Checkbox("Show Icon", ref CurrencyAlertSystem.Config.OverlayIcon);
         settingsChange |= ImGui.Checkbox("Show Text", ref CurrencyAlertSystem.Config.OverlayText);

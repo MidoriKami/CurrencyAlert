@@ -9,6 +9,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
+using KamiLib.Game;
 
 namespace CurrencyAlert.Views.Windows.Overlay;
 
@@ -36,6 +37,12 @@ public class CurrencyOverlay : Window {
         => IsOpen = CurrencyAlertSystem.Config.OverlayEnabled && 
                     (HasActiveWarnings(Currencies) || CurrencyAlertSystem.Config.RepositionMode) && 
                     Service.ClientState.IsLoggedIn;
+
+    public override bool DrawConditions() {
+        if (CurrencyAlertSystem.Config.HideInDuties && Condition.IsBoundByDuty()) return false;
+
+        return true;
+    }
 
     public override void PreDraw() {
         Flags |= ImGuiWindowFlags.NoMove;
