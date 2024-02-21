@@ -28,7 +28,7 @@ public class CurrencyOverlay : Window {
     private List<TrackedCurrency> Currencies => CurrencyAlertSystem.Config is { RepositionMode: true } ? previewCurrencies : CurrencyAlertSystem.Config.Currencies;
     
     public CurrencyOverlay() : base("CurrencyAlert - Overlay Window") {
-        Flags |= ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar;
+        Flags |= ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoFocusOnAppearing;
 
         ForceMainWindow = true;
     }
