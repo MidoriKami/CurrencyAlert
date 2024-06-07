@@ -12,6 +12,7 @@ using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
+using KamiLib.CommandManager;
 using KamiLib.Components;
 using KamiLib.Window;
 using KamiLib.Window.SelectionWindows;
@@ -19,7 +20,7 @@ using Lumina.Excel.GeneratedSheets;
 
 namespace CurrencyAlert.Views.Windows.Config;
 
-public class ConfigurationWindow() : TabbedSelectionWindow<TrackedCurrency>("CurrencyAlert Configuration Window", new Vector2(450.0f, 350.0f), true) {
+public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
     protected override List<TrackedCurrency> Options => System.Config.Currencies;
     protected override float SelectionListWidth { get; set; } = 150.0f;
     protected override float SelectionItemHeight => 20.0f;
@@ -30,6 +31,13 @@ public class ConfigurationWindow() : TabbedSelectionWindow<TrackedCurrency>("Cur
     protected override List<ITabItem> Tabs { get; } = [
         new GeneralSettingsTab()
     ];
+    
+    public ConfigurationWindow() : base("CurrencyAlert Configuration Window", new Vector2(450.0f, 350.0f), true) {
+        System.CommandManager.RegisterCommand(new CommandHandler {
+            Delegate = _ => Toggle(),
+            ActivationPath = "/"
+        });
+    }
 
     protected override void DrawListOption(TrackedCurrency option) {
          if (option is { Name: var name, Icon: { } icon}) {
