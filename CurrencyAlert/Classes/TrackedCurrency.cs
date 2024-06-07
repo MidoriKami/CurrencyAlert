@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Linq;
+using System.Text.Json.Serialization;
 using CurrencyAlert.Models.Enums;
 using Dalamud.Interface.Internal;
-using Dalamud.Plugin.Services;
+using Dalamud.Interface.Textures;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel.GeneratedSheets;
-using Newtonsoft.Json;
 
 namespace CurrencyAlert.Models;
 
 public unsafe class TrackedCurrency {
-    private IDalamudTextureWrap? iconTexture;
     private uint? itemId;
     private string? label;
+    private uint? iconId;
 
     public required CurrencyType Type { get; init; }
 
-    [JsonIgnore] 
-    public IDalamudTextureWrap? Icon => GetIcon();
+    [JsonIgnore]
+    public IDalamudTextureWrap Icon => Service.TextureProvider.GetFromGameIcon(new GameIconLookup {
+        HiRes = true,
+        ItemHq = Type is CurrencyType.HighQualityItem,
+        IconId = iconId ??= Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId)?.Icon ?? 0,
+    }).GetWrapOrEmpty();
 
     public uint ItemId {
         get => GetItemId();
@@ -32,7 +36,7 @@ public unsafe class TrackedCurrency {
     
     public bool ShowInOverlay { get; set; }
 
-    public bool Invert { get; set; } = false;
+    public bool Invert { get; set; }
     
     [JsonIgnore] 
     public string Name => label ??= Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId)?.Name ?? "Unable to read name";
@@ -40,10 +44,10 @@ public unsafe class TrackedCurrency {
     [JsonIgnore] 
     public bool CanRemove => Type is not (CurrencyType.LimitedTomestone or CurrencyType.NonLimitedTomestone);
 
-    [JsonIgnore]
+    [JsonIgnore] 
     public int CurrentCount => InventoryManager.Instance()->GetInventoryItemCount(ItemId, Type is CurrencyType.HighQualityItem, false, false);
 
-    [JsonIgnore]
+    [JsonIgnore] 
     public bool HasWarning => Invert ? CurrentCount < Threshold : CurrentCount > Threshold;
 
     private uint GetItemId() {
@@ -54,18 +58,5 @@ public unsafe class TrackedCurrency {
         };
 
         return itemId.Value;
-    }
-
-    private IDalamudTextureWrap? GetIcon() {
-        if (iconTexture is null && Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId) is { Icon: var iconId }) {
-            var iconFlags = Type switch {
-                CurrencyType.HighQualityItem => ITextureProvider.IconFlags.HiRes | ITextureProvider.IconFlags.ItemHighQuality,
-                _ => ITextureProvider.IconFlags.HiRes,
-            };
-            
-            return iconTexture ??= Service.TextureProvider.GetIcon(iconId, iconFlags);
-        }
-
-        return iconTexture;
     }
 }
