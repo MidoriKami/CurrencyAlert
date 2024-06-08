@@ -12,4 +12,9 @@ public class Service {
     [PluginService] public static ITextureProvider TextureProvider { get; set; }
     [PluginService] public static IChatGui ChatGui { get; set; }
     [PluginService] public static IPluginLog Log { get; set; }
+    [PluginService] public static IGameGui GameGui { get; set; }
+    [PluginService] public static IFramework Framework { get; set; }
+    [PluginService] public static IAddonEventManager AddonEventManager { get; set; }
+    [PluginService] public static IAddonLifecycle AddonLifecycle { get; set; }
+    [PluginService] public static ICondition Condition { get; set; }
 }

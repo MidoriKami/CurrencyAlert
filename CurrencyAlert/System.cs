@@ -1,4 +1,5 @@
-﻿using CurrencyAlert.Models.Config;
+﻿using CurrencyAlert.Classes;
+using CurrencyAlert.Windows;
 using KamiLib.CommandManager;
 using KamiLib.Window;
 
@@ -9,4 +10,7 @@ public class System {
     public static Configuration Config { get; set; }
     public static CommandManager CommandManager { get; set; }
     public static WindowManager WindowManager { get; set; }
+    public static OverlayController OverlayController { get; set; }
+    
+    public static ConfigurationWindow ConfigurationWindow { get; set; }
 }

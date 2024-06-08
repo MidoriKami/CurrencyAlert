@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Linq;
 using System.Text.Json.Serialization;
-using CurrencyAlert.Models.Enums;
+using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface.Internal;
 using Dalamud.Interface.Textures;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel.GeneratedSheets;
 
-namespace CurrencyAlert.Models;
+namespace CurrencyAlert.Classes;
+
+public enum CurrencyType {
+    Item,
+    HighQualityItem,
+    Collectable,
+    NonLimitedTomestone,
+    LimitedTomestone
+}
 
 public unsafe class TrackedCurrency {
     private uint? itemId;
@@ -16,16 +24,20 @@ public unsafe class TrackedCurrency {
 
     public required CurrencyType Type { get; init; }
 
-    [JsonIgnore]
-    public IDalamudTextureWrap Icon => Service.TextureProvider.GetFromGameIcon(new GameIconLookup {
+    [JsonIgnore] public IDalamudTextureWrap Icon => Service.TextureProvider.GetFromGameIcon(new GameIconLookup {
         HiRes = true,
         ItemHq = Type is CurrencyType.HighQualityItem,
-        IconId = iconId ??= Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId)?.Icon ?? 0,
+        IconId = IconId,
     }).GetWrapOrEmpty();
 
     public uint ItemId {
         get => GetItemId();
         init => itemId = value;
+    }
+
+    public uint IconId {
+        get => iconId ??= Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId)?.Icon ?? 0;
+        set => iconId = value;
     }
 
     public required int Threshold { get; set; }
@@ -36,19 +48,21 @@ public unsafe class TrackedCurrency {
     
     public bool ShowInOverlay { get; set; }
 
+    public bool ShowItemName { get; set; } = true;
+
     public bool Invert { get; set; }
+
+    public SeString OverlayWarningText { get; set; } = "Above Threshold";
     
-    [JsonIgnore] 
-    public string Name => label ??= Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId)?.Name ?? "Unable to read name";
+    [JsonIgnore] public CurrencyWarningNode? WarningNode { get; set; }
+    
+    [JsonIgnore] public string Name => label ??= Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId)?.Name ?? "Unable to read name";
 
-    [JsonIgnore] 
-    public bool CanRemove => Type is not (CurrencyType.LimitedTomestone or CurrencyType.NonLimitedTomestone);
+    [JsonIgnore] public bool CanRemove => Type is not (CurrencyType.LimitedTomestone or CurrencyType.NonLimitedTomestone);
 
-    [JsonIgnore] 
-    public int CurrentCount => InventoryManager.Instance()->GetInventoryItemCount(ItemId, Type is CurrencyType.HighQualityItem, false, false);
+    [JsonIgnore] public int CurrentCount => InventoryManager.Instance()->GetInventoryItemCount(ItemId, Type is CurrencyType.HighQualityItem, false, false);
 
-    [JsonIgnore] 
-    public bool HasWarning => Invert ? CurrentCount < Threshold : CurrentCount > Threshold;
+    [JsonIgnore] public bool HasWarning => Invert ? CurrentCount < Threshold : CurrentCount > Threshold;
 
     private uint GetItemId() {
         itemId ??= Type switch {

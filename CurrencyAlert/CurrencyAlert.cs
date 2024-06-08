@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CurrencyAlert.Models;
-using CurrencyAlert.Models.Config;
-using CurrencyAlert.Models.Enums;
-using CurrencyAlert.Views.Windows.Config;
+using CurrencyAlert.Classes;
+using CurrencyAlert.Windows;
 using Dalamud.Plugin;
 using KamiLib.CommandManager;
 using KamiLib.Window;
+using KamiToolKit.Nodes;
 
 namespace CurrencyAlert;
 
@@ -26,14 +25,22 @@ public sealed class CurrencyAlertPlugin : IDalamudPlugin {
         }
 
         System.WindowManager = new WindowManager(Service.PluginInterface);
-        
-        System.WindowManager.AddWindow(new ConfigurationWindow(), WindowFlags.IsConfigWindow | WindowFlags.RequireLoggedIn);
+
+        System.ConfigurationWindow = new ConfigurationWindow();
+        System.WindowManager.AddWindow(System.ConfigurationWindow, WindowFlags.IsConfigWindow | WindowFlags.RequireLoggedIn);
+
+        System.OverlayController = new OverlayController();
         
         Service.ClientState.TerritoryChanged += OnZoneChange;
     }
 
     public void Dispose() {
         Service.ClientState.TerritoryChanged -= OnZoneChange;
+
+        System.OverlayController.Dispose();
+        
+        // Ensure all nodes are disposed.
+        NodeBase.DisposeAllNodes();
     }
     
     private void OnZoneChange(ushort e) {
