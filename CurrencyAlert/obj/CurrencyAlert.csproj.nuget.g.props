@@ -5,14 +5,28 @@
     <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
     <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
     <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
-    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\Kami\.nuget\packages\</NuGetPackageFolders>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\Mi_Ka\.nuget\packages\</NuGetPackageFolders>
     <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
     <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">6.9.1</NuGetToolVersion>
   </PropertyGroup>
   <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <SourceRoot Include="C:\Users\Kami\.nuget\packages\" />
+    <SourceRoot Include="C:\Users\Mi_Ka\.nuget\packages\" />
   </ItemGroup>
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\build\Microsoft.SourceLink.Common.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.common\1.1.1\build\Microsoft.SourceLink.Common.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('$(NuGetPackageRoot)microsoft.build.tasks.git\1.1.1\build\Microsoft.Build.Tasks.Git.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.github\1.1.1\build\Microsoft.SourceLink.GitHub.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.bitbucket.git\1.1.1\build\Microsoft.SourceLink.Bitbucket.Git.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.bitbucket.git\1.1.1\build\Microsoft.SourceLink.Bitbucket.Git.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.azurerepos.git\1.1.1\build\Microsoft.SourceLink.AzureRepos.Git.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.azurerepos.git\1.1.1\build\Microsoft.SourceLink.AzureRepos.Git.props')" />
+    <Import Project="$(NuGetPackageRoot)dotnet.reproduciblebuilds\1.1.1\build\DotNet.ReproducibleBuilds.props" Condition="Exists('$(NuGetPackageRoot)dotnet.reproduciblebuilds\1.1.1\build\DotNet.ReproducibleBuilds.props')" />
     <Import Project="$(NuGetPackageRoot)dalamudpackager\2.1.12\build\DalamudPackager.props" Condition="Exists('$(NuGetPackageRoot)dalamudpackager\2.1.12\build\DalamudPackager.props')" />
   </ImportGroup>
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgMicrosoft_SourceLink_Common Condition=" '$(PkgMicrosoft_SourceLink_Common)' == '' ">C:\Users\Mi_Ka\.nuget\packages\microsoft.sourcelink.common\1.1.1</PkgMicrosoft_SourceLink_Common>
+    <PkgMicrosoft_Build_Tasks_Git Condition=" '$(PkgMicrosoft_Build_Tasks_Git)' == '' ">C:\Users\Mi_Ka\.nuget\packages\microsoft.build.tasks.git\1.1.1</PkgMicrosoft_Build_Tasks_Git>
+    <PkgMicrosoft_SourceLink_GitLab Condition=" '$(PkgMicrosoft_SourceLink_GitLab)' == '' ">C:\Users\Mi_Ka\.nuget\packages\microsoft.sourcelink.gitlab\1.1.1</PkgMicrosoft_SourceLink_GitLab>
+    <PkgMicrosoft_SourceLink_GitHub Condition=" '$(PkgMicrosoft_SourceLink_GitHub)' == '' ">C:\Users\Mi_Ka\.nuget\packages\microsoft.sourcelink.github\1.1.1</PkgMicrosoft_SourceLink_GitHub>
+    <PkgMicrosoft_SourceLink_Bitbucket_Git Condition=" '$(PkgMicrosoft_SourceLink_Bitbucket_Git)' == '' ">C:\Users\Mi_Ka\.nuget\packages\microsoft.sourcelink.bitbucket.git\1.1.1</PkgMicrosoft_SourceLink_Bitbucket_Git>
+    <PkgMicrosoft_SourceLink_AzureRepos_Git Condition=" '$(PkgMicrosoft_SourceLink_AzureRepos_Git)' == '' ">C:\Users\Mi_Ka\.nuget\packages\microsoft.sourcelink.azurerepos.git\1.1.1</PkgMicrosoft_SourceLink_AzureRepos_Git>
+  </PropertyGroup>
 </Project>
