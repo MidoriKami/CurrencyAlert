@@ -1,12 +1,3 @@
-/.idea/.idea.CurrencyAlert/.idea/.gitignore
-/CurrencyAlert/obj/x64/Debug/CurrencyAlert.AssemblyInfoInputs.cache
-/CurrencyAlert/obj/x64/Debug/CurrencyAlert.assets.cache
-/CurrencyAlert/obj/x64/Debug/CurrencyAlert.csproj.AssemblyReference.cache
-/CurrencyAlert/obj/CurrencyAlert.csproj.nuget.dgspec.json
-/CurrencyAlert/CurrencyAlert.json
-/.idea/.idea.CurrencyAlert/.idea/encodings.xml
-/CurrencyAlert/packages.lock.json
-/CurrencyAlert/obj/project.assets.json
-/CurrencyAlert/obj/project.nuget.cache
-/CurrencyAlert/obj/project.packagespec.json
-/CurrencyAlert/obj/rider.project.restore.info
+/.idea/
+/CurrencyAlert/obj/
+/CurrencyAlert/bin/
