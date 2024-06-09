@@ -32,7 +32,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
     public ConfigurationWindow() : base("CurrencyAlert Configuration Window", new Vector2(450.0f, 400.0f), true) {
         System.CommandManager.RegisterCommand(new CommandHandler {
             Delegate = _ => Toggle(),
-            ActivationPath = "/"
+            ActivationPath = "/",
         });
     }
 

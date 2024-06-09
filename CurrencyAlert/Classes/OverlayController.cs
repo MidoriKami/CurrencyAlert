@@ -59,31 +59,31 @@ public unsafe class OverlayController : IDisposable {
         };
 
         foreach (var warning in System.Config.Currencies.Where(currency => currency is { HasWarning: true, Enabled: true, ShowInOverlay: true })) {
-            if (!overlayListNode.Any(warningNode => warningNode.IconId == warning.IconId)) {
-                var newWarningNode = new CurrencyWarningNode(100_000 + warning.IconId) {
-                    TextColor = System.Config.OverlayTextColor,
-                    ShowIcon = System.Config.OverlayIcon,
-                    ShowBackground = System.Config.ShowBackground,
-                    BackgroundColor = System.Config.BackgroundColor,
-                    ShowText = System.Config.OverlayText,
-                    Height = 32.0f,
-                    IconId = warning.IconId,
-                    NodeFlags = NodeFlags.Visible,
-                    WarningText = warning.ShowItemName ? $"{warning.Name} {warning.OverlayWarningText}" : $"{warning.OverlayWarningText}",
-                };
+            if (overlayListNode.Any(warningNode => warningNode.IconId == warning.IconId)) continue;
+            
+            var newWarningNode = new CurrencyWarningNode(100_000 + warning.IconId) {
+                TextColor = System.Config.OverlayTextColor,
+                ShowIcon = System.Config.OverlayIcon,
+                ShowBackground = System.Config.ShowBackground,
+                BackgroundColor = System.Config.BackgroundColor,
+                ShowText = System.Config.OverlayText,
+                Height = 32.0f,
+                IconId = warning.IconId,
+                NodeFlags = NodeFlags.Visible,
+                WarningText = warning.ShowItemName ? $"{warning.Name} {warning.OverlayWarningText}" : $"{warning.OverlayWarningText}",
+            };
                 
-                newWarningNode.UpdateLayout();
-                overlayListNode.Add(newWarningNode);
+            newWarningNode.UpdateLayout();
+            overlayListNode.Add(newWarningNode);
 
-                warning.WarningNode = newWarningNode;
-            }
+            warning.WarningNode = newWarningNode;
         }
 
         foreach (var warning in System.Config.Currencies.Where(currency => currency is { HasWarning: false } or { Enabled: false } or { ShowInOverlay: false })) {
-            if (overlayListNode.FirstOrDefault(warningNode => warningNode.IconId == warning.IconId) is {} node) {
-                overlayListNode.Remove(node);
-                warning.WarningNode = null;
-            }
+            if (overlayListNode.FirstOrDefault(warningNode => warningNode.IconId == warning.IconId) is not { } node) continue;
+            
+            overlayListNode.Remove(node);
+            warning.WarningNode = null;
         }
     }
     

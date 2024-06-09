@@ -50,13 +50,13 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
     }
 
     protected override void Dispose(bool disposing) {
-        if (disposing) {
-            base.Dispose(disposing);
+        if (!disposing) return;
+        
+        base.Dispose(disposing);
             
-            background.Dispose();
-            currencyIcon.Dispose();
-            warningText.Dispose();
-        }
+        background.Dispose();
+        currencyIcon.Dispose();
+        warningText.Dispose();
     }
 
     public Vector4 BackgroundColor {

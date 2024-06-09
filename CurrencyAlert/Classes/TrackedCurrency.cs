@@ -14,7 +14,7 @@ public enum CurrencyType {
     HighQualityItem,
     Collectable,
     NonLimitedTomestone,
-    LimitedTomestone
+    LimitedTomestone,
 }
 
 public unsafe class TrackedCurrency {
@@ -68,7 +68,7 @@ public unsafe class TrackedCurrency {
         itemId ??= Type switch {
             CurrencyType.NonLimitedTomestone => Service.DataManager.GetExcelSheet<TomestonesItem>()!.First(item => item.Tomestones.Row is 2).Item.Row,
             CurrencyType.LimitedTomestone => Service.DataManager.GetExcelSheet<TomestonesItem>()!.First(item => item.Tomestones.Row is 3).Item.Row,
-            _ => throw new Exception($"ItemId not initialized for type: {Type}")
+            _ => throw new Exception($"ItemId not initialized for type: {Type}"),
         };
 
         return itemId.Value;

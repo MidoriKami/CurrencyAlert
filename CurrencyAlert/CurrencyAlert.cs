@@ -74,6 +74,6 @@ public sealed class CurrencyAlertPlugin : IDalamudPlugin {
         new TrackedCurrency { Type = CurrencyType.Item, ItemId = 33913, Threshold = 3500, Enabled = true }, // PurpleCrafterScripts
         new TrackedCurrency { Type = CurrencyType.Item, ItemId = 33914, Threshold = 3500, Enabled = true }, // PurpleGathererScripts
 
-        new TrackedCurrency { Type = CurrencyType.Item, ItemId = 28063, Threshold = 7500, Enabled = true }
+        new TrackedCurrency { Type = CurrencyType.Item, ItemId = 28063, Threshold = 7500, Enabled = true },
     ];
 }
