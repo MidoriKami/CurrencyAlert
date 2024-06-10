@@ -47,7 +47,8 @@ public unsafe class OverlayController : IDisposable {
 
     public void Dispose() {
         Service.Framework.Update -= OnFrameworkUpdate;
-        
+        Service.AddonLifecycle.UnregisterListener(AttachListNode);
+
         overlayListNode.Dispose();
     }
     
