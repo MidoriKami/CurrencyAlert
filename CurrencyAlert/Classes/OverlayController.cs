@@ -93,7 +93,6 @@ public unsafe class OverlayController : IDisposable {
         if (addon->RootNode is null) return; // addon->RootNode is not guaranteed to never be null.
         
         AttachToAddon(addon);
-        Service.AddonLifecycle.UnregisterListener(AttachListNode);
     }
 
     private void AttachToAddon(AtkUnitBase* addon) {
