@@ -3,14 +3,15 @@ using System.Linq;
 using CurrencyAlert.Classes;
 using CurrencyAlert.Windows;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using KamiLib.CommandManager;
 using KamiLib.Window;
-using KamiToolKit.Nodes;
+using KamiToolKit;
 
 namespace CurrencyAlert;
 
 public sealed class CurrencyAlertPlugin : IDalamudPlugin {
-	public CurrencyAlertPlugin(DalamudPluginInterface pluginInterface) {
+	public CurrencyAlertPlugin(IDalamudPluginInterface pluginInterface) {
 		pluginInterface.Create<Service>();
 
 		System.Config = Configuration.Load();
@@ -23,24 +24,32 @@ public sealed class CurrencyAlertPlugin : IDalamudPlugin {
 			System.Config.Version = 7;
 			System.Config.Save();
 		}
-
+		
+		System.NativeController = new NativeController(Service.PluginInterface);
 		System.WindowManager = new WindowManager(Service.PluginInterface);
 
 		System.ConfigurationWindow = new ConfigurationWindow();
 		System.WindowManager.AddWindow(System.ConfigurationWindow, WindowFlags.IsConfigWindow | WindowFlags.RequireLoggedIn);
 
 		System.OverlayController = new OverlayController();
+		System.OverlayController.Load();
         
 		Service.ClientState.TerritoryChanged += OnZoneChange;
+		Service.Framework.Update += OnFrameworkUpdate;
 	}
 
 	public void Dispose() {
 		Service.ClientState.TerritoryChanged -= OnZoneChange;
+		Service.Framework.Update -= OnFrameworkUpdate;
 
+		System.OverlayController.Unload();
 		System.OverlayController.Dispose();
-        
-		// Ensure all nodes are disposed.
-		NodeBase.DisposeAllNodes();
+		
+		System.NativeController.Dispose();
+	}
+	
+	private void OnFrameworkUpdate(IFramework framework) {
+		System.OverlayController.Update();
 	}
     
 	private void OnZoneChange(ushort e) {

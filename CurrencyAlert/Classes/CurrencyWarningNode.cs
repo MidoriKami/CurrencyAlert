@@ -16,6 +16,9 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
     public CurrencyWarningNode(uint baseId) : base(NodeType.Res) {
         NodeID = baseId;
 
+        MouseClick = () => System.ConfigurationWindow.UnCollapseOrShow();
+        Tooltip = "Overlay from CurrencyAlert";
+
         background = new ImageNode {
             NodeID = 110_000 + baseId,
             NodeFlags = NodeFlags.Visible,
@@ -23,7 +26,7 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
             Color = KnownColor.Black.Vector() with { W = 0.30f },
         };
         
-        background.AttachNode(this, NodePosition.AsFirstChild);
+        System.NativeController.AttachToNode(background, this, NodePosition.AsLastChild);
 
         currencyIcon = new ImageNode {
             NodeID = 120_000 + baseId,
@@ -33,7 +36,7 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
             Margin = new Spacing(5.0f),
         };
         
-        currencyIcon.AttachNode(this, NodePosition.AsLastChild);
+        System.NativeController.AttachToNode(currencyIcon, this, NodePosition.AsLastChild);
 
         warningText = new TextNode {
             NodeID = 130_000 + baseId,
@@ -46,17 +49,22 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
             TextFlags = TextFlags.AutoAdjustNodeSize
         };
         
-        warningText.AttachNode(this, NodePosition.AsLastChild);
+        System.NativeController.AttachToNode(warningText, this, NodePosition.AsLastChild);
     }
 
     protected override void Dispose(bool disposing) {
         if (!disposing) return;
         
-        base.Dispose(disposing);
-            
+        System.NativeController.DetachFromNode(background);
         background.Dispose();
+        
+        System.NativeController.DetachFromNode(currencyIcon);
         currencyIcon.Dispose();
+        
+        System.NativeController.DetachFromNode(warningText);
         warningText.Dispose();
+        
+        base.Dispose(disposing);
     }
 
     public Vector4 BackgroundColor {

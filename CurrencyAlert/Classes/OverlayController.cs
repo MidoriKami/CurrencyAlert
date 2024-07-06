@@ -1,21 +1,21 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
-using Dalamud.Game.Addon.Lifecycle;
-using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Interface;
-using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using KamiLib.Extensions;
+using KamiToolKit;
 using KamiToolKit.Classes;
 using KamiToolKit.Nodes;
 
 namespace CurrencyAlert.Classes;
 
-public unsafe class OverlayController : IDisposable {
-    private readonly ListNode<CurrencyWarningNode> overlayListNode;
+public unsafe class OverlayController() : NativeUiOverlayController(Service.AddonLifecycle, Service.Framework, Service.GameGui) {
+    private ListNode<CurrencyWarningNode>? overlayListNode;
+
+    private static AddonNamePlate* AddonNamePlate => (AddonNamePlate*) Service.GameGui.GetAddonByName("NamePlate");
     
-    public OverlayController() {
+    protected override void AttachNodes(AddonNamePlate* addonNamePlate) {
         overlayListNode = new ListNode<CurrencyWarningNode> {
             Size = System.Config.OverlaySize,
             Position = System.Config.OverlayDrawPosition,
@@ -24,35 +24,30 @@ public unsafe class OverlayController : IDisposable {
             NodeFlags = NodeFlags.Clip,
             LayoutOrientation = System.Config.SingleLine ? LayoutOrientation.Horizontal : LayoutOrientation.Vertical,
             NodeID = 100_000,
-            Tooltip = "Overlay from CurrencyAlert Plugin",
-            OnClick = () => System.ConfigurationWindow.UnCollapseOrToggle(),
             Color = KnownColor.White.Vector(),
             BackgroundVisible = System.Config.ShowListBackground,
             BackgroundColor = System.Config.ListBackgroundColor,
         };
         
-        // If the NamePlate addon doesn't exist yet, wait for it.
-        var addon = (AtkUnitBase*) Service.GameGui.GetAddonByName("NamePlate");
-        if (addon is null) {
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "NamePlate", AttachListNode);
-        }
-        
-        // else it does exist, 
-        else {
-            AttachToAddon(addon);
-        }
-
-        Service.Framework.Update += OnFrameworkUpdate;
+        System.NativeController.AttachToAddon(overlayListNode, (AtkUnitBase*)addonNamePlate, addonNamePlate->RootNode, NodePosition.AsFirstChild);
+        UpdateSettings();
     }
 
-    public void Dispose() {
-        Service.Framework.Update -= OnFrameworkUpdate;
-        Service.AddonLifecycle.UnregisterListener(AttachListNode);
-
+    protected override void DetachNodes(AddonNamePlate* addonNamePlate) {
+        if (overlayListNode is null) return;
+        
+        System.NativeController.DetachFromAddon(overlayListNode, (AtkUnitBase*)addonNamePlate);
         overlayListNode.Dispose();
     }
-    
-    private void OnFrameworkUpdate(IFramework framework) {
+
+    protected override void LoadConfig() {
+        // Nothing to load
+    }
+
+    public void Update() {
+        if (overlayListNode is null) return;
+        if (AddonNamePlate is null) return;
+        
         overlayListNode.IsVisible = System.Config.HideInDuties switch {
             true when Service.Condition.IsBoundByDuty() => false,
             true when !Service.Condition.IsBoundByDuty() => true,
@@ -72,12 +67,16 @@ public unsafe class OverlayController : IDisposable {
                 IconId = warning.IconId,
                 NodeFlags = NodeFlags.Visible,
                 WarningText = warning.ShowItemName ? $"{warning.Name} {warning.OverlayWarningText}" : $"{warning.OverlayWarningText}",
+                MouseClick = () => System.ConfigurationWindow.UnCollapseOrToggle(),
             };
-                
+
+            newWarningNode.EnableEvents(Service.AddonEventManager, (AtkUnitBase*)AddonNamePlate);
             newWarningNode.UpdateLayout();
             overlayListNode.Add(newWarningNode);
-
             warning.WarningNode = newWarningNode;
+
+            RefreshAddon();
+            UpdateSettings();
         }
 
         foreach (var warning in System.Config.Currencies.Where(currency => currency is { HasWarning: false } or { Enabled: false } or { ShowInOverlay: false })) {
@@ -85,25 +84,15 @@ public unsafe class OverlayController : IDisposable {
             
             overlayListNode.Remove(node);
             warning.WarningNode = null;
+            
+            RefreshAddon();
+            UpdateSettings();
         }
-    }
-    
-    private void AttachListNode(AddonEvent type, AddonArgs args) {
-        var addon = (AtkUnitBase*) args.Addon; // Note, args.Addon is guaranteed to never be null.
-        if (addon->RootNode is null) return; // addon->RootNode is not guaranteed to never be null.
-        
-        AttachToAddon(addon);
-    }
-
-    private void AttachToAddon(AtkUnitBase* addon) {
-        overlayListNode.AttachNode(addon, addon->RootNode, NodePosition.AsFirstChild);
-        overlayListNode.EnableTooltip(Service.AddonEventManager, addon);
-        overlayListNode.EnableOnClick(Service.AddonEventManager, addon);
-        
-        UpdateSettings();
     }
 
     public void UpdateSettings() {
+        if (overlayListNode is null) return;
+        
         overlayListNode.IsVisible = System.Config.OverlayEnabled;
         overlayListNode.Position = System.Config.OverlayDrawPosition;
         overlayListNode.Size = System.Config.OverlaySize;

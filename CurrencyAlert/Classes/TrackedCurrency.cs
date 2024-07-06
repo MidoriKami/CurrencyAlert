@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Text.Json.Serialization;
 using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Interface.Internal;
 using Dalamud.Interface.Textures;
+using Dalamud.Interface.Textures.TextureWraps;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel.GeneratedSheets;
 

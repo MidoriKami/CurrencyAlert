@@ -2,6 +2,7 @@
 using CurrencyAlert.Windows;
 using KamiLib.CommandManager;
 using KamiLib.Window;
+using KamiToolKit;
 
 namespace CurrencyAlert;
 
@@ -11,6 +12,6 @@ public static class System {
     public static CommandManager CommandManager { get; set; }
     public static WindowManager WindowManager { get; set; }
     public static OverlayController OverlayController { get; set; }
-    
     public static ConfigurationWindow ConfigurationWindow { get; set; }
+    public static NativeController NativeController { get; set; }
 }

@@ -19,7 +19,7 @@
     <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.bitbucket.git\1.1.1\build\Microsoft.SourceLink.Bitbucket.Git.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.bitbucket.git\1.1.1\build\Microsoft.SourceLink.Bitbucket.Git.props')" />
     <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.azurerepos.git\1.1.1\build\Microsoft.SourceLink.AzureRepos.Git.props" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.azurerepos.git\1.1.1\build\Microsoft.SourceLink.AzureRepos.Git.props')" />
     <Import Project="$(NuGetPackageRoot)dotnet.reproduciblebuilds\1.1.1\build\DotNet.ReproducibleBuilds.props" Condition="Exists('$(NuGetPackageRoot)dotnet.reproduciblebuilds\1.1.1\build\DotNet.ReproducibleBuilds.props')" />
-    <Import Project="$(NuGetPackageRoot)dalamudpackager\2.1.12\build\DalamudPackager.props" Condition="Exists('$(NuGetPackageRoot)dalamudpackager\2.1.12\build\DalamudPackager.props')" />
+    <Import Project="$(NuGetPackageRoot)dalamudpackager\2.1.13\build\DalamudPackager.props" Condition="Exists('$(NuGetPackageRoot)dalamudpackager\2.1.13\build\DalamudPackager.props')" />
   </ImportGroup>
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <PkgMicrosoft_SourceLink_Common Condition=" '$(PkgMicrosoft_SourceLink_Common)' == '' ">C:\Users\MidoriKami\.nuget\packages\microsoft.sourcelink.common\1.1.1</PkgMicrosoft_SourceLink_Common>
