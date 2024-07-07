@@ -49,6 +49,8 @@ public sealed class CurrencyAlertPlugin : IDalamudPlugin {
 	}
 	
 	private void OnFrameworkUpdate(IFramework framework) {
+		if (!Service.ClientState.IsLoggedIn) return;
+		
 		System.OverlayController.Update();
 	}
     

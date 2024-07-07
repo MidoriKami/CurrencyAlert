@@ -28,9 +28,27 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
             BackgroundVisible = System.Config.ShowListBackground,
             BackgroundColor = System.Config.ListBackgroundColor,
         };
+
+        foreach (uint index in Enumerable.Range(0, 10)) {
+            var newOverlayNode = new CurrencyWarningNode(100_000 + index) {
+                TextColor = System.Config.OverlayTextColor,
+                ShowIcon = System.Config.OverlayIcon,
+                ShowBackground = System.Config.ShowBackground,
+                BackgroundColor = System.Config.BackgroundColor,
+                ShowText = System.Config.OverlayText,
+                Height = 32.0f,
+                MouseClick = () => System.ConfigurationWindow.UnCollapseOrToggle(),
+                Tooltip = "Overlay from CurrencyAlert plugin",
+            };
+                        
+            newOverlayNode.EnableEvents(Service.AddonEventManager, (AtkUnitBase*)AddonNamePlate);
+            overlayListNode.Add(newOverlayNode);
+        }
+        
+        RefreshAddon();
+        UpdateSettings();
         
         System.NativeController.AttachToAddon(overlayListNode, (AtkUnitBase*)addonNamePlate, addonNamePlate->RootNode, NodePosition.AsFirstChild);
-        UpdateSettings();
     }
 
     protected override void DetachNodes(AddonNamePlate* addonNamePlate) {
@@ -38,6 +56,7 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
         
         System.NativeController.DetachFromAddon(overlayListNode, (AtkUnitBase*)addonNamePlate);
         overlayListNode.Dispose();
+        overlayListNode = null;
     }
 
     protected override void LoadConfig() {
@@ -46,7 +65,6 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
 
     public void Update() {
         if (overlayListNode is null) return;
-        if (AddonNamePlate is null) return;
         
         overlayListNode.IsVisible = System.Config.HideInDuties switch {
             true when Service.Condition.IsBoundByDuty() => false,
@@ -54,39 +72,22 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
             _ => System.Config.OverlayEnabled,
         };
 
-        foreach (var warning in System.Config.Currencies.Where(currency => currency is { HasWarning: true, Enabled: true, ShowInOverlay: true })) {
-            if (overlayListNode.Any(warningNode => warningNode.IconId == warning.IconId)) continue;
-            
-            var newWarningNode = new CurrencyWarningNode(100_000 + warning.IconId) {
-                TextColor = System.Config.OverlayTextColor,
-                ShowIcon = System.Config.OverlayIcon,
-                ShowBackground = System.Config.ShowBackground,
-                BackgroundColor = System.Config.BackgroundColor,
-                ShowText = System.Config.OverlayText,
-                Height = 32.0f,
-                IconId = warning.IconId,
-                NodeFlags = NodeFlags.Visible,
-                WarningText = warning.ShowItemName ? $"{warning.Name} {warning.OverlayWarningText}" : $"{warning.OverlayWarningText}",
-                MouseClick = () => System.ConfigurationWindow.UnCollapseOrToggle(),
-            };
-
-            newWarningNode.EnableEvents(Service.AddonEventManager, (AtkUnitBase*)AddonNamePlate);
-            newWarningNode.UpdateLayout();
-            overlayListNode.Add(newWarningNode);
-            warning.WarningNode = newWarningNode;
-
-            RefreshAddon();
-            UpdateSettings();
+        foreach (var bannerOverlayNode in overlayListNode) {
+            bannerOverlayNode.IsVisible = false;
         }
 
-        foreach (var warning in System.Config.Currencies.Where(currency => currency is { HasWarning: false } or { Enabled: false } or { ShowInOverlay: false })) {
-            if (overlayListNode.FirstOrDefault(warningNode => warningNode.IconId == warning.IconId) is not { } node) continue;
-            
-            overlayListNode.Remove(node);
-            warning.WarningNode = null;
-            
-            RefreshAddon();
-            UpdateSettings();
+        var activeWarnings = System.Config.Currencies
+            .Where(currency => currency is { HasWarning: true, Enabled: true, ShowInOverlay: true })
+            .ToList();
+
+        foreach (var index in Enumerable.Range(0, 10)) {
+            var overlayNode = overlayListNode[index];
+            if (index > overlayListNode.Count || index >= activeWarnings.Count) continue;
+
+            overlayNode.Currency = activeWarnings[index];
+            overlayNode.IsVisible = true;
+            overlayNode.Refresh();
+            overlayListNode.RecalculateLayout();
         }
     }
 
@@ -101,14 +102,14 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
         overlayListNode.BackgroundVisible = System.Config.ShowListBackground;
         overlayListNode.BackgroundColor = System.Config.ListBackgroundColor;
 
-        foreach (var node in overlayListNode.OfType<CurrencyWarningNode>()) {
+        foreach (var node in overlayListNode) {
             node.ShowText = System.Config.OverlayText;
             node.ShowIcon = System.Config.OverlayIcon;
             node.ShowBackground = System.Config.ShowBackground;
             node.BackgroundColor = System.Config.BackgroundColor;
             node.TextColor = System.Config.OverlayTextColor;
             
-            node.UpdateLayout();
+            node.Refresh();
         }
         
         overlayListNode.RecalculateLayout();

@@ -54,8 +54,6 @@ public unsafe class TrackedCurrency {
 
     public SeString OverlayWarningText { get; set; } = "Above Threshold";
     
-    [JsonIgnore] public CurrencyWarningNode? WarningNode { get; set; }
-    
     [JsonIgnore] public string Name => label ??= Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId)?.Name ?? "Unable to read name";
 
     [JsonIgnore] public bool CanRemove => Type is not (CurrencyType.LimitedTomestone or CurrencyType.NonLimitedTomestone);

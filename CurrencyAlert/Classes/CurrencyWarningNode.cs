@@ -12,17 +12,19 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
     private readonly ImageNode background;
     private readonly ImageNode currencyIcon;
     private readonly TextNode warningText;
+
+    public TrackedCurrency? Currency { get; set; }
     
     public CurrencyWarningNode(uint baseId) : base(NodeType.Res) {
         NodeID = baseId;
 
-        MouseClick = () => System.ConfigurationWindow.UnCollapseOrShow();
-        Tooltip = "Overlay from CurrencyAlert";
-
+        Margin = new Spacing(5.0f);
+        
         background = new ImageNode {
             NodeID = 110_000 + baseId,
             NodeFlags = NodeFlags.Visible,
-            Size = new Vector2(600.0f, 32.0f),
+            Position = new Vector2(-5.0f, -5.0f),
+            Size = new Vector2(600.0f, 32.0f) + new Vector2(10.0f, 10.0f),
             Color = KnownColor.Black.Vector() with { W = 0.30f },
         };
         
@@ -66,7 +68,7 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
         
         base.Dispose(disposing);
     }
-
+    
     public Vector4 BackgroundColor {
         get => background.Color;
         set => background.Color = value;
@@ -79,7 +81,7 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
 
     private uint InternalIconId { get; set; }
 
-    public required uint IconId {
+    public uint IconId {
         get => InternalIconId;
         set {
             InternalIconId = value;
@@ -107,7 +109,9 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
         set => warningText.TextColor = value;
     }
 
-    public void UpdateLayout() {
+    public void Refresh() {
+        if (Currency is null) return;
+        
         if (!ShowIcon) warningText.Position = new Vector2(Margin.Left, 0.0f);
         if (ShowIcon) warningText.Position = new Vector2(currencyIcon.LayoutSize.X + Margin.Left, 0.0f);
 
@@ -119,6 +123,9 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
         Width = width;
         Height = 32.0f;
 
-        background.Width = width;
+        background.Width = width + 10.0f;
+
+        IconId = Currency.IconId;
+        WarningText = Currency.ShowItemName ? $"{Currency.Name} {Currency.OverlayWarningText}" : $"{Currency.OverlayWarningText}";
     }
 }

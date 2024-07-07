@@ -26,7 +26,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
     protected override bool ShowListButton => true;
 
     protected override List<ITabItem> Tabs { get; } = [
-        new GeneralSettingsTab()
+        new GeneralSettingsTab(),
     ];
     
     public ConfigurationWindow() : base("CurrencyAlert Configuration Window", new Vector2(450.0f, 400.0f), true) {
@@ -112,7 +112,6 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
          if (currency is not {
                  ItemId: var itemId, 
                  OverlayWarningText: var warningText, 
-                 Name: var itemName, 
                  ShowItemName: var showName, 
                  Enabled: var enabled, 
                  ChatWarning: var chatWarning, 
@@ -145,12 +144,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
 
          if (ImGuiTweaks.Checkbox("Overlay Show Name", ref showName, "Show item name in the overlay")) {
              currency.ShowItemName = showName;
-             
-             if (currency.WarningNode is not null) {
-                 currency.WarningNode.WarningText = showName ? $"{itemName} {currency.OverlayWarningText}" : $"{currency.OverlayWarningText}";
-                 System.OverlayController.UpdateSettings();
-             }
-             
+             System.OverlayController.UpdateSettings();
              System.Config.Save();
          }
          
@@ -159,12 +153,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
          var warningTextTempString = warningText.ToString();
          if (ImGui.InputText("Warning Text", ref warningTextTempString, 1024)) {
              currency.OverlayWarningText = warningTextTempString;
-             
-             if (currency.WarningNode is not null) {
-                 currency.WarningNode.WarningText = showName ? $"{itemName} {currency.OverlayWarningText}" : $"{currency.OverlayWarningText}";
-                 System.OverlayController.UpdateSettings();
-             }
-             
+             System.OverlayController.UpdateSettings();
              System.Config.Save();
          }
 
@@ -254,86 +243,45 @@ public class GeneralSettingsTab : ITabItem {
     public bool Disabled => false;
 
     public void Draw() {
+        var configChanged = false;
+        
         ImGui.Text("General Settings");
         ImGui.Separator();
         ImGuiHelpers.ScaledDummy(5.0f);
 
-        if (ImGui.Checkbox("Enable Chat Warnings", ref System.Config.ChatWarning)) {
-            System.Config.Save();
-        }
+        configChanged |= ImGui.Checkbox("Enable Chat Warnings", ref System.Config.ChatWarning);
         ImGuiHelpers.ScaledDummy(5.0f);
 
         ImGui.Text("Overlay Settings");
         ImGui.Separator();
         ImGuiHelpers.ScaledDummy(5.0f);
-
-        if (ImGui.Checkbox("Enabled", ref System.Config.OverlayEnabled)) {
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
-        ImGuiHelpers.ScaledDummy(5.0f);
-
-        if (ImGui.Checkbox("Hide In Duties", ref System.Config.HideInDuties)) {
-            System.Config.Save();
-        }
-        ImGuiHelpers.ScaledDummy(5.0f);
-
-        if (ImGui.Checkbox("Show Icon", ref System.Config.OverlayIcon)) {
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
-
-        if (ImGui.Checkbox("Show Text", ref System.Config.OverlayText)) {
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
-
-        if (ImGui.Checkbox("Show Background", ref System.Config.ShowBackground)) {
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
-        ImGuiHelpers.ScaledDummy(5.0f);
-
-        if (ImGui.Checkbox("Single Line Mode", ref System.Config.SingleLine)) {
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
-        ImGuiHelpers.ScaledDummy(5.0f);
-
-        if (ImGuiTweaks.EnumCombo("Anchor Corner", ref System.Config.LayoutAnchor)) {
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
-        ImGuiHelpers.ScaledDummy(5.0f);
-        
-        if (ImGuiTweaks.Checkbox("List Background", ref System.Config.ShowListBackground, "Useful for seeing where the list is for size/positioning")) {
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
-        
-        if (ImGui.ColorEdit4("List Background Color", ref System.Config.ListBackgroundColor, ImGuiColorEditFlags.AlphaPreviewHalf)) {
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
+        configChanged |= ImGui.Checkbox("Enabled", ref System.Config.OverlayEnabled);
         
         ImGuiHelpers.ScaledDummy(5.0f);
+        configChanged |= ImGui.Checkbox("Hide In Duties", ref System.Config.HideInDuties);
         
-        if (ImGui.ColorEdit4("Text Color", ref System.Config.OverlayTextColor, ImGuiColorEditFlags.AlphaPreviewHalf)) {
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
+        ImGuiHelpers.ScaledDummy(5.0f);
+        configChanged |= ImGui.Checkbox("Show Icon", ref System.Config.OverlayIcon);
+        configChanged |= ImGui.Checkbox("Show Text", ref System.Config.OverlayText);
+        configChanged |= ImGui.Checkbox("Show Background", ref System.Config.ShowBackground);
+        
+        ImGuiHelpers.ScaledDummy(5.0f);
+        configChanged |= ImGui.Checkbox("Single Line Mode", ref System.Config.SingleLine);
+        
+        ImGuiHelpers.ScaledDummy(5.0f);
+        configChanged |= ImGuiTweaks.EnumCombo("Anchor Corner", ref System.Config.LayoutAnchor);
+        
+        ImGuiHelpers.ScaledDummy(5.0f);
+        configChanged |= ImGuiTweaks.Checkbox("List Background", ref System.Config.ShowListBackground, "Useful for seeing where the list is for size/positioning");
+        configChanged |= ImGui.ColorEdit4("List Background Color", ref System.Config.ListBackgroundColor, ImGuiColorEditFlags.AlphaPreviewHalf);
+        
+        ImGuiHelpers.ScaledDummy(5.0f);
+        configChanged |= ImGui.ColorEdit4("Text Color", ref System.Config.OverlayTextColor, ImGuiColorEditFlags.AlphaPreviewHalf);
+        configChanged |= ImGui.ColorEdit4("Warning Background Color", ref System.Config.BackgroundColor, ImGuiColorEditFlags.AlphaPreviewHalf);
+        configChanged |= ImGui.DragFloat2("Overlay Position", ref System.Config.OverlayDrawPosition, 5.0f);
+        configChanged |= ImGui.DragFloat2("Overlay Size", ref System.Config.OverlaySize, 5.0f);
 
-        if (ImGui.ColorEdit4("Warning Background Color", ref System.Config.BackgroundColor, ImGuiColorEditFlags.AlphaPreviewHalf)) {
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
-        
-        if (ImGui.DragFloat2("Overlay Position", ref System.Config.OverlayDrawPosition, 5.0f)) {
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
-        
-        if (ImGui.DragFloat2("Overlay Size", ref System.Config.OverlaySize, 5.0f)) {
+        if (configChanged) {
             System.OverlayController.UpdateSettings();
             System.Config.Save();
         }
