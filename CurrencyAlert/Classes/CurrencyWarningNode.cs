@@ -13,21 +13,21 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
     private readonly ImageNode currencyIcon;
     private readonly TextNode warningText;
 
-    public TrackedCurrency? Currency { get; set; }
-    
     public CurrencyWarningNode(uint baseId) : base(NodeType.Res) {
         NodeID = baseId;
 
         Margin = new Spacing(5.0f);
-        
+
         background = new ImageNode {
             NodeID = 110_000 + baseId,
             NodeFlags = NodeFlags.Visible,
             Position = new Vector2(-5.0f, -5.0f),
             Size = new Vector2(600.0f, 32.0f) + new Vector2(10.0f, 10.0f),
-            Color = KnownColor.Black.Vector() with { W = 0.30f },
+            Color = KnownColor.Black.Vector() with {
+                W = 0.30f,
+            },
         };
-        
+
         System.NativeController.AttachToNode(background, this, NodePosition.AsLastChild);
 
         currencyIcon = new ImageNode {
@@ -37,7 +37,7 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
             Size = new Vector2(32.0f, 32.0f),
             Margin = new Spacing(5.0f),
         };
-        
+
         System.NativeController.AttachToNode(currencyIcon, this, NodePosition.AsLastChild);
 
         warningText = new TextNode {
@@ -48,27 +48,14 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
             Margin = new Spacing(5.0f),
             Position = new Vector2(currencyIcon.LayoutSize.X + Margin.Left, 0.0f),
             TextColor = KnownColor.White.Vector(),
-            TextFlags = TextFlags.AutoAdjustNodeSize
+            TextFlags = TextFlags.AutoAdjustNodeSize,
         };
-        
+
         System.NativeController.AttachToNode(warningText, this, NodePosition.AsLastChild);
     }
 
-    protected override void Dispose(bool disposing) {
-        if (!disposing) return;
-        
-        System.NativeController.DetachFromNode(background);
-        background.Dispose();
-        
-        System.NativeController.DetachFromNode(currencyIcon);
-        currencyIcon.Dispose();
-        
-        System.NativeController.DetachFromNode(warningText);
-        warningText.Dispose();
-        
-        base.Dispose(disposing);
-    }
-    
+    public TrackedCurrency? Currency { get; set; }
+
     public Vector4 BackgroundColor {
         get => background.Color;
         set => background.Color = value;
@@ -109,9 +96,24 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
         set => warningText.TextColor = value;
     }
 
+    protected override void Dispose(bool disposing) {
+        if (!disposing) return;
+
+        System.NativeController.DetachFromNode(background);
+        background.Dispose();
+
+        System.NativeController.DetachFromNode(currencyIcon);
+        currencyIcon.Dispose();
+
+        System.NativeController.DetachFromNode(warningText);
+        warningText.Dispose();
+
+        base.Dispose(disposing);
+    }
+
     public void Refresh() {
         if (Currency is null) return;
-        
+
         if (!ShowIcon) warningText.Position = new Vector2(Margin.Left, 0.0f);
         if (ShowIcon) warningText.Position = new Vector2(currencyIcon.LayoutSize.X + Margin.Left, 0.0f);
 

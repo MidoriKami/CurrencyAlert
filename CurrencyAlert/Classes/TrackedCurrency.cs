@@ -18,16 +18,14 @@ public enum CurrencyType {
 }
 
 public unsafe class TrackedCurrency {
+    private uint? iconId;
     private uint? itemId;
     private string? label;
-    private uint? iconId;
 
     public required CurrencyType Type { get; init; }
 
     [JsonIgnore] public IDalamudTextureWrap Icon => Service.TextureProvider.GetFromGameIcon(new GameIconLookup {
-        HiRes = true,
-        ItemHq = Type is CurrencyType.HighQualityItem,
-        IconId = IconId,
+        HiRes = true, ItemHq = Type is CurrencyType.HighQualityItem, IconId = IconId,
     }).GetWrapOrEmpty();
 
     public uint ItemId {
@@ -45,7 +43,7 @@ public unsafe class TrackedCurrency {
     public bool Enabled { get; set; } = true;
 
     public bool ChatWarning { get; set; }
-    
+
     public bool ShowInOverlay { get; set; }
 
     public bool ShowItemName { get; set; } = true;
@@ -53,7 +51,7 @@ public unsafe class TrackedCurrency {
     public bool Invert { get; set; }
 
     public SeString OverlayWarningText { get; set; } = "Above Threshold";
-    
+
     [JsonIgnore] public string Name => label ??= Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId)?.Name ?? "Unable to read name";
 
     [JsonIgnore] public bool CanRemove => Type is not (CurrencyType.LimitedTomestone or CurrencyType.NonLimitedTomestone);

@@ -14,7 +14,7 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
     private ListNode<CurrencyWarningNode>? overlayListNode;
 
     private static AddonNamePlate* AddonNamePlate => (AddonNamePlate*) Service.GameGui.GetAddonByName("NamePlate");
-    
+
     protected override void AttachNodes(AddonNamePlate* addonNamePlate) {
         overlayListNode = new ListNode<CurrencyWarningNode> {
             Size = System.Config.OverlaySize,
@@ -40,21 +40,21 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
                 MouseClick = () => System.ConfigurationWindow.UnCollapseOrToggle(),
                 Tooltip = "Overlay from CurrencyAlert plugin",
             };
-                        
-            newOverlayNode.EnableEvents(Service.AddonEventManager, (AtkUnitBase*)AddonNamePlate);
+
+            newOverlayNode.EnableEvents(Service.AddonEventManager, (AtkUnitBase*) AddonNamePlate);
             overlayListNode.Add(newOverlayNode);
         }
-        
+
         RefreshAddon();
         UpdateSettings();
-        
-        System.NativeController.AttachToAddon(overlayListNode, (AtkUnitBase*)addonNamePlate, addonNamePlate->RootNode, NodePosition.AsFirstChild);
+
+        System.NativeController.AttachToAddon(overlayListNode, (AtkUnitBase*) addonNamePlate, addonNamePlate->RootNode, NodePosition.AsFirstChild);
     }
 
     protected override void DetachNodes(AddonNamePlate* addonNamePlate) {
         if (overlayListNode is null) return;
-        
-        System.NativeController.DetachFromAddon(overlayListNode, (AtkUnitBase*)addonNamePlate);
+
+        System.NativeController.DetachFromAddon(overlayListNode, (AtkUnitBase*) addonNamePlate);
         overlayListNode.Dispose();
         overlayListNode = null;
     }
@@ -65,7 +65,7 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
 
     public void Update() {
         if (overlayListNode is null) return;
-        
+
         overlayListNode.IsVisible = System.Config.HideInDuties switch {
             true when Service.Condition.IsBoundByDuty() => false,
             true when !Service.Condition.IsBoundByDuty() => true,
@@ -93,7 +93,7 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
 
     public void UpdateSettings() {
         if (overlayListNode is null) return;
-        
+
         overlayListNode.IsVisible = System.Config.OverlayEnabled;
         overlayListNode.Position = System.Config.OverlayDrawPosition;
         overlayListNode.Size = System.Config.OverlaySize;
@@ -108,10 +108,10 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
             node.ShowBackground = System.Config.ShowBackground;
             node.BackgroundColor = System.Config.BackgroundColor;
             node.TextColor = System.Config.OverlayTextColor;
-            
+
             node.Refresh();
         }
-        
+
         overlayListNode.RecalculateLayout();
     }
 }
