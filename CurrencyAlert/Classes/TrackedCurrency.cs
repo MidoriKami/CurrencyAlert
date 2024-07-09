@@ -65,7 +65,7 @@ public unsafe class TrackedCurrency {
     private uint GetItemId() {
         itemId ??= Type switch {
             CurrencyType.NonLimitedTomestone => Service.DataManager.GetExcelSheet<TomestonesItem>()!.First(item => item.Tomestones.Row is 2).Item.Row,
-            CurrencyType.LimitedTomestone => Service.DataManager.GetExcelSheet<TomestonesItem>()!.First(item => item.Tomestones.Row is 3).Item.Row,
+            CurrencyType.LimitedTomestone => Service.DataManager.GetExcelSheet<TomestonesItem>()!.FirstOrDefault(item => item.Tomestones.Row is 3)?.Item.Row ?? 0,
             _ => throw new Exception($"ItemId not initialized for type: {Type}"),
         };
 
