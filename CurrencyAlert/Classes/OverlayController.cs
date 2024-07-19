@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -101,6 +102,7 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
         overlayListNode.LayoutAnchor = System.Config.LayoutAnchor;
         overlayListNode.BackgroundVisible = System.Config.ShowListBackground;
         overlayListNode.BackgroundColor = System.Config.ListBackgroundColor;
+        overlayListNode.Scale = new Vector2(System.Config.OverlayScale);
 
         foreach (var node in overlayListNode) {
             node.ShowText = System.Config.OverlayText;

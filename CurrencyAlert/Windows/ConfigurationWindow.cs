@@ -311,6 +311,7 @@ public class GeneralSettingsTab : ITabItem {
         configChanged |= ImGui.ColorEdit4("Warning Background Color", ref System.Config.BackgroundColor, ImGuiColorEditFlags.AlphaPreviewHalf);
         configChanged |= ImGui.DragFloat2("Overlay Position", ref System.Config.OverlayDrawPosition, 5.0f);
         configChanged |= ImGui.DragFloat2("Overlay Size", ref System.Config.OverlaySize, 5.0f);
+        configChanged |= ImGui.DragFloat("Overlay Scale", ref System.Config.OverlayScale, 0.01f, 0.10f, 10.0f);
 
         if (configChanged) {
             System.OverlayController.UpdateSettings();
