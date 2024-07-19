@@ -3,17 +3,7 @@
   "Name": "CurrencyAlert",
   "Punchline": "Display alerts upon reaching configurable currencies thresholds.",
   "Description": "This plugin lets you easily manage your various currencies to prevent from wasting precious resources.",
-  "Tags": [
-    "Currency",
-    "Tomestones",
-    "Utility",
-    "Other"
-  ],
-  "CategoryTags": [
-    "Utility",
-    "Other",
-	"UI"
-  ],
+  "Tags": [    "Currency",    "Tomestones",    "Alert",    "Tracker"  ],
   "InternalName": "CurrencyAlert",
   "RepoUrl": "https://github.com/MidoriKami/CurrencyAlert",
   "AcceptsFeedback": false
