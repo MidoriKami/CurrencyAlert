@@ -9,7 +9,7 @@ using KamiToolKit.Nodes;
 namespace CurrencyAlert.Classes;
 
 public class CurrencyWarningNode : NodeBase<AtkResNode> {
-    private readonly ImageNode background;
+    private readonly BackgroundImageNode background;
     private readonly ImageNode currencyIcon;
     private readonly TextNode warningText;
 
@@ -18,7 +18,7 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
 
         Margin = new Spacing(5.0f);
 
-        background = new ImageNode {
+        background = new BackgroundImageNode {
             NodeID = 110_000 + baseId,
             NodeFlags = NodeFlags.Visible,
             Position = new Vector2(-5.0f, -5.0f),
