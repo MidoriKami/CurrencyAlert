@@ -80,12 +80,6 @@ public sealed class CurrencyAlertPlugin : IDalamudPlugin {
         new TrackedCurrency { Type = CurrencyType.NonLimitedTomestone, Threshold = 1400, Enabled = true, }, // NonLimitedTomestone
         new TrackedCurrency { Type = CurrencyType.LimitedTomestone, Threshold = 1400, Enabled = true, }, // LimitedTomestone
 
-        // Removed for now, todo: replace with dynamic item lookup
-        // new TrackedCurrency { Type = CurrencyType.Item, ItemId = 25199, Threshold = 3500, Enabled = true, }, // WhiteCrafterScripts
-        // new TrackedCurrency { Type = CurrencyType.Item, ItemId = 25200, Threshold = 3500, Enabled = true, }, // WhiteGathererScripts
-        // new TrackedCurrency { Type = CurrencyType.Item, ItemId = 33913, Threshold = 3500, Enabled = true, }, // PurpleCrafterScripts
-        // new TrackedCurrency { Type = CurrencyType.Item, ItemId = 33914, Threshold = 3500, Enabled = true, }, // PurpleGathererScripts
-
         new TrackedCurrency { Type = CurrencyType.Item, ItemId = 28063, Threshold = 7500, Enabled = true, }, // Skybuilders scripts
     ];
 }
