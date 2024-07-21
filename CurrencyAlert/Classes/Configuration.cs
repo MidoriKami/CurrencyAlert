@@ -27,6 +27,7 @@ public class Configuration : IPluginConfiguration {
     public bool ShowListBackground = false;
     public bool SingleLine = false;
     public float OverlayScale = 1.0f;
+    public bool OverlayItemCount = true;
 
     public int Version { get; set; } = 7;
 

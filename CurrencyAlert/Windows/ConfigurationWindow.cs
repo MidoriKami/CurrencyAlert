@@ -295,6 +295,7 @@ public class GeneralSettingsTab : ITabItem {
         configChanged |= ImGui.Checkbox("Show Icon", ref System.Config.OverlayIcon);
         configChanged |= ImGui.Checkbox("Show Text", ref System.Config.OverlayText);
         configChanged |= ImGui.Checkbox("Show Background", ref System.Config.ShowBackground);
+        configChanged |= ImGui.Checkbox("Show Item Count", ref System.Config.OverlayItemCount);
 
         ImGuiHelpers.ScaledDummy(5.0f);
         configChanged |= ImGui.Checkbox("Single Line Mode", ref System.Config.SingleLine);

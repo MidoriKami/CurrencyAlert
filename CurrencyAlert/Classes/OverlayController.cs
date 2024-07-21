@@ -36,6 +36,7 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
                 ShowIcon = System.Config.OverlayIcon,
                 ShowBackground = System.Config.ShowBackground,
                 BackgroundColor = System.Config.BackgroundColor,
+                ShowItemCount = System.Config.OverlayItemCount,
                 ShowText = System.Config.OverlayText,
                 Height = 32.0f,
                 MouseClick = () => System.ConfigurationWindow.UnCollapseOrToggle(),
@@ -110,6 +111,7 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
             node.ShowBackground = System.Config.ShowBackground;
             node.BackgroundColor = System.Config.BackgroundColor;
             node.TextColor = System.Config.OverlayTextColor;
+            node.ShowItemCount = System.Config.OverlayItemCount;
 
             node.Refresh();
         }
