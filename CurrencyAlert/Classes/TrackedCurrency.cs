@@ -38,19 +38,19 @@ public unsafe class TrackedCurrency {
         set => iconId = value;
     }
 
-    public required int Threshold { get; set; }
+    public required int Threshold;
 
-    public bool Enabled { get; set; } = true;
+    public bool Enabled = true;
 
-    public bool ChatWarning { get; set; }
+    public bool ChatWarning;
 
-    public bool ShowInOverlay { get; set; }
+    public bool ShowInOverlay;
 
-    public bool ShowItemName { get; set; } = true;
+    public bool ShowItemName = true;
 
-    public bool Invert { get; set; }
+    public bool Invert;
 
-    public SeString OverlayWarningText { get; set; } = "Above Threshold";
+    public SeString OverlayWarningText = "Above Threshold";
 
     [JsonIgnore] public string Name => label ??= Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId)?.Name ?? "Unable to read name";
 

@@ -131,6 +131,13 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
 
     public void Refresh() {
         if (Currency is null) return;
+        
+        ShowText = System.Config.OverlayText;
+        ShowIcon = System.Config.OverlayIcon;
+        ShowBackground = System.Config.ShowBackground;
+        BackgroundColor = System.Config.BackgroundColor;
+        TextColor = System.Config.OverlayTextColor;
+        ShowItemCount = System.Config.OverlayItemCount;
 
         if (!ShowIcon) warningText.Position = new Vector2(Margin.Left + 5.0f, 0.0f);
         if (ShowIcon) warningText.Position = new Vector2(currencyIcon.LayoutSize.X + Margin.Left + 5.0f, 0.0f);

@@ -143,61 +143,31 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
     }
 
     private void DrawSettings(TrackedCurrency currency) {
-        if (currency is not {
-                ItemId: var itemId,
-                OverlayWarningText: var warningText,
-                ShowItemName: var showName,
-                Enabled: var enabled,
-                ChatWarning: var chatWarning,
-                ShowInOverlay: var overlay,
-                Invert: var invert,
-                Threshold: var threshold,
-            }) return;
+        using var id = ImRaii.PushId(currency.ItemId.ToString());
+        
+        var configChanged = false;
 
-        if (ImGui.Checkbox($"Enable##{itemId}", ref enabled)) {
-            currency.Enabled = enabled;
-            System.Config.Save();
-        }
+        configChanged |= ImGui.Checkbox($"Enable", ref currency.Enabled);
 
         ImGuiHelpers.ScaledDummy(5.0f);
 
-        if (ImGuiTweaks.Checkbox($"Chat Warning##{itemId}", ref chatWarning, "When amount is above threshold, print a message to chat when changing zones")) {
-            currency.ChatWarning = chatWarning;
-            System.Config.Save();
-        }
-
-        if (ImGuiTweaks.Checkbox($"Invert##{itemId}", ref invert, "Warn when below the threshold instead of above")) {
-            currency.Invert = invert;
-            System.Config.Save();
-        }
-
-        if (ImGuiTweaks.Checkbox($"Overlay##{itemId}", ref overlay, "Allows this currency to show in the overlay")) {
-            currency.ShowInOverlay = overlay;
-            System.Config.Save();
-        }
-
-        if (ImGuiTweaks.Checkbox("Overlay Show Name", ref showName, "Show item name in the overlay")) {
-            currency.ShowItemName = showName;
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
-        }
+        configChanged |= ImGuiTweaks.Checkbox("Chat Warning", ref currency.ChatWarning, "When amount is above threshold, print a message to chat when changing zones");
+        configChanged |= ImGuiTweaks.Checkbox("Invert", ref currency.Invert, "Warn when below the threshold instead of above");
+        configChanged |= ImGuiTweaks.Checkbox("Overlay", ref currency.ShowInOverlay, "Allows this currency to show in the overlay");
+        configChanged |= ImGuiTweaks.Checkbox("Overlay Show Name", ref currency.ShowItemName, "Show item name in the overlay");
 
         ImGuiHelpers.ScaledDummy(5.0f);
 
-        var warningTextTempString = warningText.ToString();
+        var warningTextTempString = currency.OverlayWarningText.ToString();
         if (ImGui.InputText("Warning Text", ref warningTextTempString, 1024)) {
             currency.OverlayWarningText = warningTextTempString;
-            System.OverlayController.UpdateSettings();
-            System.Config.Save();
+            configChanged = true;
         }
 
         ImGuiHelpers.ScaledDummy(5.0f);
 
         ImGui.PushItemWidth(50.0f * ImGuiHelpers.GlobalScale);
-        if (ImGui.InputInt($"Threshold##{itemId}", ref threshold, 0, 0)) {
-            currency.Threshold = threshold;
-            System.Config.Save();
-        }
+        configChanged |= ImGui.InputInt($"Threshold", ref currency.Threshold, 0, 0);
 
         ImGui.SetCursorPosY(ImGui.GetContentRegionMax().Y - 23.0f * ImGuiHelpers.GlobalScale);
         using (var _ = ImRaii.Disabled(!(ImGui.GetIO().KeyShift && ImGui.GetIO().KeyCtrl && currency.CanRemove))) {
@@ -210,6 +180,11 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
 
         if (ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenDisabled)) {
             ImGui.SetTooltip(currency.CanRemove ? "Hold Shift + Control while clicking to delete this currency" : "Special currencies cannot be removed");
+        }
+
+        if (configChanged) {
+            System.OverlayController.Refresh();
+            System.Config.Save();
         }
     }
 
@@ -315,7 +290,7 @@ public class GeneralSettingsTab : ITabItem {
         configChanged |= ImGui.DragFloat("Overlay Scale", ref System.Config.OverlayScale, 0.01f, 0.10f, 10.0f);
 
         if (configChanged) {
-            System.OverlayController.UpdateSettings();
+            System.OverlayController.Refresh();
             System.Config.Save();
         }
     }

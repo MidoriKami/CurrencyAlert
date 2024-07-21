@@ -37,10 +37,10 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
                 ShowBackground = System.Config.ShowBackground,
                 BackgroundColor = System.Config.BackgroundColor,
                 ShowItemCount = System.Config.OverlayItemCount,
-                ShowText = System.Config.OverlayText,
                 Height = 32.0f,
                 MouseClick = () => System.ConfigurationWindow.UnCollapseOrToggle(),
                 Tooltip = "Overlay from CurrencyAlert plugin",
+                ShowText = System.Config.OverlayText,
             };
 
             newOverlayNode.EnableEvents(Service.AddonEventManager, (AtkUnitBase*) AddonNamePlate);
@@ -48,7 +48,7 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
         }
 
         RefreshAddon();
-        UpdateSettings();
+        Refresh();
 
         System.NativeController.AttachToAddon(overlayListNode, (AtkUnitBase*) addonNamePlate, addonNamePlate->RootNode, NodePosition.AsFirstChild);
     }
@@ -93,7 +93,7 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
         }
     }
 
-    public void UpdateSettings() {
+    public void Refresh() {
         if (overlayListNode is null) return;
 
         overlayListNode.IsVisible = System.Config.OverlayEnabled;
@@ -106,13 +106,6 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
         overlayListNode.Scale = new Vector2(System.Config.OverlayScale);
 
         foreach (var node in overlayListNode) {
-            node.ShowText = System.Config.OverlayText;
-            node.ShowIcon = System.Config.OverlayIcon;
-            node.ShowBackground = System.Config.ShowBackground;
-            node.BackgroundColor = System.Config.BackgroundColor;
-            node.TextColor = System.Config.OverlayTextColor;
-            node.ShowItemCount = System.Config.OverlayItemCount;
-
             node.Refresh();
         }
 
