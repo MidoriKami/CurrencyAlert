@@ -10,7 +10,7 @@ namespace CurrencyAlert.Classes;
 
 public class CurrencyWarningNode : NodeBase<AtkResNode> {
     private readonly BackgroundImageNode background;
-    private readonly ImageNode currencyIcon;
+    private readonly IconImageNode currencyIcon;
     private readonly TextNode warningText;
     private readonly TextNode itemCountText;
 
@@ -29,7 +29,7 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
 
         System.NativeController.AttachToNode(background, this, NodePosition.AsLastChild);
 
-        currencyIcon = new ImageNode {
+        currencyIcon = new IconImageNode {
             NodeID = 120_000 + baseId,
             Position = new Vector2(5.0f, 0.0f),
             NodeFlags = NodeFlags.Visible,
@@ -85,7 +85,7 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
         get => InternalIconId;
         set {
             InternalIconId = value;
-            currencyIcon.LoadIcon(value);
+            currencyIcon.IconId = value;
         }
     }
 
