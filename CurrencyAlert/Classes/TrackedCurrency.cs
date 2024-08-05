@@ -30,10 +30,12 @@ public unsafe class TrackedCurrency {
 
     public uint ItemId {
         get => GetItemId();
-        init => itemId = value;
+        init => itemId = IsSpecialCurrency() ? GetItemId() : value;
     }
 
-    public uint IconId {
+    // Don't save iconId because we have currencies that change over time
+    // Doing this lookup once per load is entirely fine.
+    [JsonIgnore] public uint IconId {
         get => iconId ??= Service.DataManager.GetExcelSheet<Item>()!.GetRow(ItemId)?.Icon ?? 0;
         set => iconId = value;
     }
@@ -61,12 +63,21 @@ public unsafe class TrackedCurrency {
     [JsonIgnore] public bool HasWarning => Invert ? CurrentCount < Threshold : CurrentCount > Threshold;
 
     private uint GetItemId() {
-        itemId ??= Type switch {
-            CurrencyType.NonLimitedTomestone => Service.DataManager.GetExcelSheet<TomestonesItem>()!.First(item => item.Tomestones.Row is 2).Item.Row,
-            CurrencyType.LimitedTomestone => Service.DataManager.GetExcelSheet<TomestonesItem>()!.FirstOrDefault(item => item.Tomestones.Row is 3)?.Item.Row ?? 0,
-            _ => throw new Exception($"ItemId not initialized for type: {Type}"),
-        };
+        // Force regenerate itemId for special currencies
+        if (IsSpecialCurrency() && itemId is 0 or null) {
+            itemId = Type switch {
+                CurrencyType.NonLimitedTomestone => Service.DataManager.GetExcelSheet<TomestonesItem>()!.First(item => item.Tomestones.Row is 2).Item.Row,
+                CurrencyType.LimitedTomestone => Service.DataManager.GetExcelSheet<TomestonesItem>()!.FirstOrDefault(item => item.Tomestones.Row is 3)?.Item.Row ?? 0,
+                _ => throw new Exception($"ItemId not initialized for type: {Type}"),
+            };
+        }
 
-        return itemId.Value;
+        return itemId ?? 0;
     }
+
+    private bool IsSpecialCurrency() => Type switch {
+        CurrencyType.NonLimitedTomestone => true,
+        CurrencyType.LimitedTomestone => true,
+        _ => false,
+    };
 }
