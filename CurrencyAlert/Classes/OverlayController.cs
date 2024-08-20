@@ -61,7 +61,7 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
         overlayListNode = null;
     }
 
-    protected override void LoadConfig() {
+    protected override void PreAttach() {
         // Nothing to load
     }
 
