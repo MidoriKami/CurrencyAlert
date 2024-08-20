@@ -47,7 +47,6 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
             overlayListNode.Add(newOverlayNode);
         }
 
-        RefreshAddon();
         Refresh();
 
         System.NativeController.AttachToAddon(overlayListNode, (AtkUnitBase*) addonNamePlate, addonNamePlate->RootNode, NodePosition.AsFirstChild);
