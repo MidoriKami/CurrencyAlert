@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CurrencyAlert.Classes;
 using CurrencyAlert.Windows;
+using Dalamud.Interface.ImGuiNotification;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI;
 using KamiLib.CommandManager;
 using KamiLib.Window;
 using KamiToolKit;
@@ -11,9 +14,24 @@ using KamiToolKit;
 namespace CurrencyAlert;
 
 public sealed class CurrencyAlertPlugin : IDalamudPlugin {
-    public CurrencyAlertPlugin(IDalamudPluginInterface pluginInterface) {
+    public unsafe CurrencyAlertPlugin(IDalamudPluginInterface pluginInterface) {
         pluginInterface.Create<Service>();
 
+        // Ensure required game settings are set
+        if (RaptureAtkModule.Instance()->AtkTextureResourceManager.DefaultTextureVersion is not 2) {
+            Service.ChatGui.PrintError("Plugin requires \"UI Resolution\" System Configuration setting to be set to \"High (WQHD/4K)\"");
+            Service.Log.Warning("Plugin requires \"UI Resolution\" System Configuration setting to be set to \"High (WQHD/4K)\"");
+            Service.NotificationManager.AddNotification(new Notification {
+                Type = NotificationType.Error,
+                Content = "Plugin requires \"UI Resolution\" System Configuration setting to be set to \"High (WQHD/4K)\"",
+                RespectUiHidden = false,
+                Minimized = false,
+                InitialDuration = TimeSpan.FromSeconds(30),
+            });
+
+            throw new Exception("Plugin unable to load, incompatible game settings.");
+        }
+        
         System.Config = Configuration.Load();
         System.CommandManager = new CommandManager(Service.PluginInterface, "currencyalert", "calert");
 
