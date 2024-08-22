@@ -11,7 +11,7 @@ using KamiToolKit.Nodes;
 
 namespace CurrencyAlert.Classes;
 
-public unsafe class OverlayController() : NativeUiOverlayController(Service.AddonLifecycle, Service.Framework, Service.GameGui, Service.GameConfig) {
+public unsafe class OverlayController() : NativeUiOverlayController(Service.AddonLifecycle, Service.Framework, Service.GameGui) {
     private ListNode<CurrencyWarningNode>? overlayListNode;
 
     private static AddonNamePlate* AddonNamePlate => (AddonNamePlate*) Service.GameGui.GetAddonByName("NamePlate");
