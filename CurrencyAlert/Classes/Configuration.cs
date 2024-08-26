@@ -5,30 +5,28 @@ using Dalamud.Configuration;
 using Dalamud.Interface;
 using KamiLib.Configuration;
 using KamiToolKit.Nodes;
+using KamiToolKit.Nodes.NodeStyles;
 
 namespace CurrencyAlert.Classes;
 
 public class Configuration : IPluginConfiguration {
-    public Vector4 BackgroundColor = KnownColor.Black.Vector().Fade(0.75f);
-
     public bool ChatWarning = false;
 
     public List<TrackedCurrency> Currencies = [];
     public bool HideInDuties = false;
-    public LayoutAnchor LayoutAnchor = LayoutAnchor.TopLeft;
-    public Vector4 ListBackgroundColor = KnownColor.CornflowerBlue.Vector();
-    public Vector2 OverlayDrawPosition = new(1920.0f / 2.0f, 1024.0f / 2.0f);
-    public bool OverlayEnabled = false;
-    public bool OverlayIcon = true;
-    public Vector2 OverlaySize = new(600.0f, 200.0f);
-    public bool OverlayText = true;
-    public Vector4 OverlayTextColor = KnownColor.White.Vector();
-    public bool ShowBackground = false;
-    public bool ShowListBackground = false;
-    public bool SingleLine = false;
-    public float OverlayScale = 1.0f;
-    public bool OverlayItemCount = true;
 
+    public ListNodeStyle ListStyle = new() {
+        LayoutAnchor = LayoutAnchor.TopLeft,
+        BackgroundColor = KnownColor.CornflowerBlue.Vector() with { W = 0.33f },
+        Size = new Vector2(600.0f, 200.0f),
+        Position = new Vector2(1920.0f, 1024.0f) / 2.0f,
+        ClipContents = true,
+        BaseDisable = BaseStyleDisable.NodeFlags | BaseStyleDisable.Color | BaseStyleDisable.Margin,
+        ListStyleDisable = ListStyleDisable.FitContents,
+    };
+
+    public CurrencyNodeStyle CurrencyNodeStyle = new();
+    
     public int Version { get; set; } = 7;
 
     public static Configuration Load()

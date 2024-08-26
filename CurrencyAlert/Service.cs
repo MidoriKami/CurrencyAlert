@@ -17,6 +17,4 @@ public class Service {
     [PluginService] public static IAddonEventManager AddonEventManager { get; set; }
     [PluginService] public static IAddonLifecycle AddonLifecycle { get; set; }
     [PluginService] public static ICondition Condition { get; set; }
-    [PluginService] public static IGameConfig GameConfig { get; set; }
-    [PluginService] public static INotificationManager NotificationManager { get; set; }
 }

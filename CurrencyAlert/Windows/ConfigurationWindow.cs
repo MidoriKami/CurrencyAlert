@@ -19,17 +19,22 @@ namespace CurrencyAlert.Windows;
 
 public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
 
-    public ConfigurationWindow() : base("CurrencyAlert Configuration Window", new Vector2(450.0f, 400.0f), true) {
+    public ConfigurationWindow() : base("CurrencyAlert Configuration Window", new Vector2(450.0f, 400.0f)) {
         System.CommandManager.RegisterCommand(new CommandHandler {
             Delegate = _ => Toggle(), ActivationPath = "/",
         });
     }
 
     protected override List<TrackedCurrency> Options => System.Config.Currencies;
+    
     protected override float SelectionListWidth { get; set; } = 150.0f;
+    
     protected override float SelectionItemHeight => 20.0f;
+    
     protected override bool AllowChildScroll => false;
+    
     protected override string SelectionListTabName => "Tracked Currencies";
+    
     protected override bool ShowListButton => true;
 
     protected override List<ITabItem> Tabs { get; } = [
@@ -246,48 +251,31 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
 
 public class GeneralSettingsTab : ITabItem {
     public string Name => "Settings";
+    
     public bool Disabled => false;
 
     public void Draw() {
         var configChanged = false;
 
-        ImGui.Text("General Settings");
-        ImGui.Separator();
-        ImGuiHelpers.ScaledDummy(5.0f);
+        ImGuiTweaks.Header("General Settings");
+        using (ImRaii.PushIndent()) {
+            configChanged |= ImGui.Checkbox("Enable Chat Warnings", ref System.Config.ChatWarning);
+        }
 
-        configChanged |= ImGui.Checkbox("Enable Chat Warnings", ref System.Config.ChatWarning);
-        ImGuiHelpers.ScaledDummy(5.0f);
-
-        ImGui.Text("Overlay Settings");
-        ImGui.Separator();
-        ImGuiHelpers.ScaledDummy(5.0f);
-        configChanged |= ImGui.Checkbox("Enabled", ref System.Config.OverlayEnabled);
-
-        ImGuiHelpers.ScaledDummy(5.0f);
-        configChanged |= ImGui.Checkbox("Hide In Duties", ref System.Config.HideInDuties);
-
-        ImGuiHelpers.ScaledDummy(5.0f);
-        configChanged |= ImGui.Checkbox("Show Icon", ref System.Config.OverlayIcon);
-        configChanged |= ImGui.Checkbox("Show Text", ref System.Config.OverlayText);
-        configChanged |= ImGui.Checkbox("Show Background", ref System.Config.ShowBackground);
-        configChanged |= ImGui.Checkbox("Show Item Count", ref System.Config.OverlayItemCount);
-
-        ImGuiHelpers.ScaledDummy(5.0f);
-        configChanged |= ImGui.Checkbox("Single Line Mode", ref System.Config.SingleLine);
-
-        ImGuiHelpers.ScaledDummy(5.0f);
-        configChanged |= ImGuiTweaks.EnumCombo("Anchor Corner", ref System.Config.LayoutAnchor);
-
-        ImGuiHelpers.ScaledDummy(5.0f);
-        configChanged |= ImGuiTweaks.Checkbox("List Background", ref System.Config.ShowListBackground, "Useful for seeing where the list is for size/positioning");
-        configChanged |= ImGui.ColorEdit4("List Background Color", ref System.Config.ListBackgroundColor, ImGuiColorEditFlags.AlphaPreviewHalf);
-
-        ImGuiHelpers.ScaledDummy(5.0f);
-        configChanged |= ImGui.ColorEdit4("Text Color", ref System.Config.OverlayTextColor, ImGuiColorEditFlags.AlphaPreviewHalf);
-        configChanged |= ImGui.ColorEdit4("Warning Background Color", ref System.Config.BackgroundColor, ImGuiColorEditFlags.AlphaPreviewHalf);
-        configChanged |= ImGui.DragFloat2("Overlay Position", ref System.Config.OverlayDrawPosition, 5.0f);
-        configChanged |= ImGui.DragFloat2("Overlay Size", ref System.Config.OverlaySize, 5.0f);
-        configChanged |= ImGui.DragFloat("Overlay Scale", ref System.Config.OverlayScale, 0.01f, 0.10f, 10.0f);
+        ImGuiTweaks.Header("Overlay Settings");
+        using (ImRaii.PushIndent()) {
+            configChanged |= ImGui.Checkbox("Hide in Duties", ref System.Config.HideInDuties);
+        }
+        
+        ImGuiTweaks.Header("Warning List Overlay Style");
+        using (ImRaii.PushIndent()) {
+            configChanged |= System.Config.ListStyle.DrawSettings();
+        }
+        
+        ImGuiTweaks.Header("Warning Style");
+        using (ImRaii.PushIndent()) {
+            configChanged |= System.Config.CurrencyNodeStyle.DrawSettings();
+        }
 
         if (configChanged) {
             System.OverlayController.Refresh();

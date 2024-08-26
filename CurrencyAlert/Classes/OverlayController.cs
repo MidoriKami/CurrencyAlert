@@ -1,7 +1,4 @@
-﻿using System.Drawing;
-using System.Linq;
-using System.Numerics;
-using Dalamud.Interface;
+﻿using System.Linq;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using KamiLib.Extensions;
@@ -18,29 +15,14 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
 
     protected override void AttachNodes(AddonNamePlate* addonNamePlate) {
         overlayListNode = new ListNode<CurrencyWarningNode> {
-            Size = System.Config.OverlaySize,
-            Position = System.Config.OverlayDrawPosition,
-            LayoutAnchor = System.Config.LayoutAnchor,
-            IsVisible = System.Config.OverlayEnabled,
-            NodeFlags = NodeFlags.Clip,
-            LayoutOrientation = System.Config.SingleLine ? LayoutOrientation.Horizontal : LayoutOrientation.Vertical,
             NodeID = 100_000,
-            Color = KnownColor.White.Vector(),
-            BackgroundVisible = System.Config.ShowListBackground,
-            BackgroundColor = System.Config.ListBackgroundColor,
         };
 
         foreach (uint index in Enumerable.Range(0, 10)) {
             var newOverlayNode = new CurrencyWarningNode(100_000 + index) {
-                TextColor = System.Config.OverlayTextColor,
-                ShowIcon = System.Config.OverlayIcon,
-                ShowBackground = System.Config.ShowBackground,
-                BackgroundColor = System.Config.BackgroundColor,
-                ShowItemCount = System.Config.OverlayItemCount,
                 Height = 32.0f,
                 MouseClick = () => System.ConfigurationWindow.UnCollapseOrToggle(),
                 Tooltip = "Overlay from CurrencyAlert plugin",
-                ShowText = System.Config.OverlayText,
             };
 
             newOverlayNode.EnableEvents(Service.AddonEventManager, (AtkUnitBase*) AddonNamePlate);
@@ -67,11 +49,9 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
     public void Update() {
         if (overlayListNode is null) return;
 
-        overlayListNode.IsVisible = System.Config.HideInDuties switch {
-            true when Service.Condition.IsBoundByDuty() => false,
-            true when !Service.Condition.IsBoundByDuty() => true,
-            _ => System.Config.OverlayEnabled,
-        };
+        if (System.Config.HideInDuties && Service.Condition.IsBoundByDuty()) {
+            overlayListNode.IsVisible = false;
+        }
 
         foreach (var bannerOverlayNode in overlayListNode) {
             bannerOverlayNode.IsVisible = false;
@@ -95,14 +75,7 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
     public void Refresh() {
         if (overlayListNode is null) return;
 
-        overlayListNode.IsVisible = System.Config.OverlayEnabled;
-        overlayListNode.Position = System.Config.OverlayDrawPosition;
-        overlayListNode.Size = System.Config.OverlaySize;
-        overlayListNode.LayoutOrientation = System.Config.SingleLine ? LayoutOrientation.Horizontal : LayoutOrientation.Vertical;
-        overlayListNode.LayoutAnchor = System.Config.LayoutAnchor;
-        overlayListNode.BackgroundVisible = System.Config.ShowListBackground;
-        overlayListNode.BackgroundColor = System.Config.ListBackgroundColor;
-        overlayListNode.Scale = new Vector2(System.Config.OverlayScale);
+        overlayListNode.SetStyle(System.Config.ListStyle);
 
         foreach (var node in overlayListNode) {
             node.Refresh();
