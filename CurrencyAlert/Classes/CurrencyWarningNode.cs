@@ -81,13 +81,30 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
     public void Refresh() {
         if (Currency is null) return;
     
-        IconId = Currency.IconId;
-        WarningText = Currency.ShowItemName ? $"{Currency.Name} {Currency.OverlayWarningText}" : $"{Currency.OverlayWarningText}";
-    
         background.SetStyle(System.Config.CurrencyNodeStyle.BackgroundStyle);
         currencyIcon.SetStyle(System.Config.CurrencyNodeStyle.CurrencyIconStyle);
         warningText.SetStyle(System.Config.CurrencyNodeStyle.WarningTextStyle);
         itemCountText.SetStyle(System.Config.CurrencyNodeStyle.ItemCountTextStyle);
+
+        NodeFlags |= NodeFlags.EmitsEvents | NodeFlags.HasCollision | NodeFlags.RespondToMouse;
+        
+        IconId = Currency.IconId;
+        WarningText = Currency.ShowItemName ? $"{Currency.Name} {Currency.OverlayWarningText}" : $"{Currency.OverlayWarningText}";
+
+        var width = Margin.Left + Margin.Right;
+
+        if (currencyIcon.IsVisible) {
+            width += currencyIcon.LayoutSize.X;
+        }
+
+        if (warningText.IsVisible) {
+            width += warningText.LayoutSize.X;
+        }
+
+        Width = width;
+        Height = 32.0f;
+        
+        background.Width = width + 10.0f;
 
         if (System.Config.CurrencyNodeStyle.ItemCountTextStyle.IsVisible) {
             itemCountText.SetNumber(Currency.CurrentCount);
