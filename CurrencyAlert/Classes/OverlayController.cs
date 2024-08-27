@@ -49,9 +49,11 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
     public void Update() {
         if (overlayListNode is null) return;
 
-        if (System.Config.HideInDuties && Service.Condition.IsBoundByDuty()) {
-            overlayListNode.IsVisible = false;
-        }
+        overlayListNode.IsVisible = System.Config.HideInDuties switch {
+            true when Service.Condition.IsBoundByDuty() => false,
+            true when !Service.Condition.IsBoundByDuty() => true,
+            _ => overlayListNode.IsVisible,
+        };
 
         foreach (var bannerOverlayNode in overlayListNode) {
             bannerOverlayNode.IsVisible = false;
