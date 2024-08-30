@@ -78,7 +78,6 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
         if (overlayListNode is null) return;
 
         overlayListNode.SetStyle(System.Config.ListStyle);
-        overlayListNode.NodeFlags |= NodeFlags.EmitsEvents | NodeFlags.HasCollision | NodeFlags.RespondToMouse;
 
         foreach (var node in overlayListNode) {
             node.Refresh();
