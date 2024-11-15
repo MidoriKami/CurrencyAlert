@@ -13,7 +13,7 @@ using KamiLib.Classes;
 using KamiLib.CommandManager;
 using KamiLib.Window;
 using KamiLib.Window.SelectionWindows;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace CurrencyAlert.Windows;
 
