@@ -163,7 +163,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
 
         ImGuiHelpers.ScaledDummy(5.0f);
 
-        if (ImGui.InputText("Warning Text", ref currency.OverlayWarningText, 1024)) {
+        if (ImGui.InputText("Warning Text", ref currency.WarningText, 1024)) {
             configChanged = true;
         }
 

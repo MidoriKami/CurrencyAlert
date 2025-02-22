@@ -52,7 +52,7 @@ public unsafe class TrackedCurrency {
 
     public bool Invert;
 
-    public string OverlayWarningText = "Above Threshold";
+    public string WarningText = "Above Threshold";
 
     [JsonIgnore] public string Name => label ??= Service.DataManager.GetExcelSheet<Item>().GetRow(ItemId).Name.ExtractText();
 
