@@ -2,7 +2,6 @@
     <PropertyGroup>
         <PackageProjectUrl>https://github.com/MidoriKami/CurrencyAlert.git</PackageProjectUrl>
         <Version>2.2.0.6</Version>
-        <TargetFramework>net9.0-windows7.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
