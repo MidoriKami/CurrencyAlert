@@ -45,8 +45,10 @@ public unsafe class OverlayController : NameplateAddonController {
             Size = new Vector2(600.0f, 200.0f),
             Position = new Vector2(1920.0f, 1024.0f) / 2.0f,
             ClipListContents = true,
-            IsVisible = true,
+            IsVisible = false,
             ItemMargin = new Spacing(10.0f),
+            Tooltip = "Overlay from CurrencyAlert plugin",
+            EnableEventFlags = true,
         };
         
         OverlayListNode.Load(ListNodeConfigPath);
