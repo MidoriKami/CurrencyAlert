@@ -1,61 +1,93 @@
-﻿using System.Linq;
+﻿using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Numerics;
+using Dalamud.Game.Addon.Events;
+using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using KamiLib.Extensions;
 using KamiToolKit;
 using KamiToolKit.Classes;
 using KamiToolKit.Nodes;
+using KamiToolKit.System;
 
 namespace CurrencyAlert.Classes;
 
-public unsafe class OverlayController() : NativeUiOverlayController(Service.AddonLifecycle, Service.Framework, Service.GameGui) {
-    private ListNode<CurrencyWarningNode>? overlayListNode;
+public unsafe class OverlayController : NameplateAddonController {
+    public ListNode<CurrencyWarningNode>? OverlayListNode { get; private set; }
 
-    private static AddonNamePlate* AddonNamePlate => (AddonNamePlate*) Service.GameGui.GetAddonByName("NamePlate");
+    internal static string ListNodeConfigPath 
+        => Path.Combine(Service.PluginInterface.ConfigDirectory.FullName, "ListNode.style.json");
 
-    protected override void AttachNodes(AddonNamePlate* addonNamePlate) {
-        overlayListNode = new ListNode<CurrencyWarningNode> {
-            NodeID = 100_000,
+    internal static string CurrencyNodeConfigPath 
+        => Path.Combine(Service.PluginInterface.ConfigDirectory.FullName, "CurrencyNode.style.json");
+
+    private int lastFrameWarningCount;
+    
+    public OverlayController() : base(Service.PluginInterface) {
+        OnAttach += AttachNodes;
+        OnDetach += DetachNodes;
+    }
+
+    public override void Dispose() {
+        OnAttach -= AttachNodes;
+        OnDetach -= DetachNodes;
+        
+        base.Dispose();
+    }
+
+    private void AttachNodes(AddonNamePlate* addonNamePlate) {
+        OverlayListNode = new ListNode<CurrencyWarningNode> {
+            NodeId = 100_000,
+            LayoutAnchor = LayoutAnchor.TopLeft,
+            BackgroundColor = KnownColor.CornflowerBlue.Vector() with { W = 0.33f },
+            Size = new Vector2(600.0f, 200.0f),
+            Position = new Vector2(1920.0f, 1024.0f) / 2.0f,
+            ClipListContents = true,
+            IsVisible = true,
+            ItemMargin = new Spacing(10.0f),
         };
+        
+        OverlayListNode.Load(ListNodeConfigPath);
 
         foreach (uint index in Enumerable.Range(0, 10)) {
             var newOverlayNode = new CurrencyWarningNode(100_000 + index) {
                 Height = 32.0f,
-                MouseClick = () => System.ConfigurationWindow.UnCollapseOrToggle(),
                 Tooltip = "Overlay from CurrencyAlert plugin",
+                EnableEventFlags = true,
             };
-
-            newOverlayNode.EnableEvents(Service.AddonEventManager, (AtkUnitBase*) AddonNamePlate);
-            overlayListNode.Add(newOverlayNode);
+            
+            newOverlayNode.Load(CurrencyNodeConfigPath);
+            
+            newOverlayNode.AddEvent(AddonEventType.MouseClick, System.ConfigurationWindow.UnCollapseOrToggle);
+            newOverlayNode.EnableEvents(Service.AddonEventManager, (AtkUnitBase*) addonNamePlate);
+            OverlayListNode.Add(newOverlayNode);
         }
 
-        Refresh();
+        System.NativeController.AttachToAddon(OverlayListNode, (AtkUnitBase*) addonNamePlate, addonNamePlate->RootNode, NodePosition.AsFirstChild);
 
-        System.NativeController.AttachToAddon(overlayListNode, (AtkUnitBase*) addonNamePlate, addonNamePlate->RootNode, NodePosition.AsFirstChild);
+        OverlayListNode.RecalculateLayout();
     }
 
-    protected override void DetachNodes(AddonNamePlate* addonNamePlate) {
-        if (overlayListNode is null) return;
+    private void DetachNodes(AddonNamePlate* addonNamePlate) {
+        if (OverlayListNode is null) return;
 
-        System.NativeController.DetachFromAddon(overlayListNode, (AtkUnitBase*) addonNamePlate);
-        overlayListNode.Dispose();
-        overlayListNode = null;
-    }
-
-    protected override void PreAttach() {
-        // Nothing to load
+        System.NativeController.DetachFromAddon(OverlayListNode, (AtkUnitBase*) addonNamePlate);
+        OverlayListNode.Dispose();
+        OverlayListNode = null;
     }
 
     public void Update() {
-        if (overlayListNode is null) return;
+        if (OverlayListNode is null) return;
 
-        overlayListNode.IsVisible = System.Config.HideInDuties switch {
+        OverlayListNode.IsVisible = System.Config.HideInDuties switch {
             true when Service.Condition.IsBoundByDuty() => false,
             true when !Service.Condition.IsBoundByDuty() => true,
-            _ => overlayListNode.IsVisible,
+            _ => OverlayListNode.IsVisible,
         };
 
-        foreach (var bannerOverlayNode in overlayListNode) {
+        foreach (var bannerOverlayNode in OverlayListNode) {
             bannerOverlayNode.IsVisible = false;
         }
 
@@ -63,26 +95,19 @@ public unsafe class OverlayController() : NativeUiOverlayController(Service.Addo
             .Where(currency => currency is { HasWarning: true, Enabled: true, ShowInOverlay: true })
             .ToList();
 
+        var currentWarningCount = activeWarnings.Count;
+        
         foreach (var index in Enumerable.Range(0, 10)) {
-            var overlayNode = overlayListNode[index];
-            if (index > overlayListNode.Count || index >= activeWarnings.Count) continue;
+            var overlayNode = OverlayListNode[index];
+            if (index > OverlayListNode.Count || index >= activeWarnings.Count) continue;
 
             overlayNode.Currency = activeWarnings[index];
             overlayNode.IsVisible = true;
-            overlayNode.Refresh();
-            overlayListNode.RecalculateLayout();
-        }
-    }
-
-    public void Refresh() {
-        if (overlayListNode is null) return;
-
-        overlayListNode.SetStyle(System.Config.ListStyle);
-
-        foreach (var node in overlayListNode) {
-            node.Refresh();
         }
 
-        overlayListNode.RecalculateLayout();
+        if (lastFrameWarningCount != currentWarningCount) {
+            OverlayListNode.RecalculateLayout();
+            lastFrameWarningCount = currentWarningCount;
+        }
     }
 }

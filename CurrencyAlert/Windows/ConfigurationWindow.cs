@@ -39,6 +39,8 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
 
     protected override List<ITabItem> Tabs { get; } = [
         new GeneralSettingsTab(),
+        new ListNodeSettingsTab(),
+        new CurrencyNodeSettingsTab(),
     ];
 
     protected override void DrawListOption(TrackedCurrency option) {
@@ -163,7 +165,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
 
         ImGuiHelpers.ScaledDummy(5.0f);
 
-        if (ImGui.InputText("Warning Text", ref currency.WarningText, 1024)) {
+        if (ImGui.InputTextWithHint("##WarningText","Warning Text", ref currency.WarningText, 1024)) {
             configChanged = true;
         }
 
@@ -186,7 +188,6 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
         }
 
         if (configChanged) {
-            System.OverlayController.Refresh();
             System.Config.Save();
         }
     }
@@ -265,19 +266,105 @@ public class GeneralSettingsTab : ITabItem {
             configChanged |= ImGui.Checkbox("Hide in Duties", ref System.Config.HideInDuties);
         }
         
-        ImGuiTweaks.Header("Warning List Overlay Style");
-        using (ImRaii.PushIndent()) {
-            configChanged |= System.Config.ListStyle.DrawSettings();
-        }
-        
-        ImGuiTweaks.Header("Warning Style");
-        using (ImRaii.PushIndent()) {
-            configChanged |= System.Config.CurrencyNodeStyle.DrawSettings();
-        }
-
         if (configChanged) {
-            System.OverlayController.Refresh();
             System.Config.Save();
         }
+    }
+}
+
+public class ListNodeSettingsTab : ITabItem {
+    public string Name => "Warning List Style";
+    
+    public bool Disabled => false;
+    
+    public void Draw() {
+        var listNode = System.OverlayController.OverlayListNode;
+        if (listNode is null) return;
+        
+        ImGuiTweaks.Header("Warning List Overlay Style");
+        using (var child = ImRaii.Child("list_config", ImGui.GetContentRegionAvail() - new Vector2(0.0f, 33.0f))) {
+            if (child) {
+                listNode.DrawConfig();
+            }
+        }
+        
+        ImGui.Separator();
+        
+        if (ImGui.Button("Save", ImGuiHelpers.ScaledVector2(100.0f, 23.0f))) {
+            listNode.Save(OverlayController.ListNodeConfigPath);
+            listNode.RecalculateLayout();
+        }
+        
+        ImGui.SameLine(ImGui.GetContentRegionMax().X / 2.0f - 75.0f * ImGuiHelpers.GlobalScale);
+        if (ImGui.Button("Refresh Layout", ImGuiHelpers.ScaledVector2(150.0f, 23.0f))) {
+            listNode.RecalculateLayout();
+        }
+
+        if (ImGui.IsItemHovered()) {
+            ImGui.SetTooltip("Triggers a refresh of the UI element to recalculate dynamic element size/positions");
+        }
+        
+        ImGui.SameLine(ImGui.GetContentRegionMax().X - 100.0f * ImGuiHelpers.GlobalScale);
+        ImGuiTweaks.DisabledButton("Reset", () => {
+            listNode.Load(OverlayController.ListNodeConfigPath);
+            listNode.RecalculateLayout();
+        });
+    }
+}
+
+public class CurrencyNodeSettingsTab : ITabItem {
+    public string Name => "Currency Node Style";
+    
+    public bool Disabled => false;
+    
+    public void Draw() {
+        var listNode = System.OverlayController.OverlayListNode;
+        if (listNode is null) return;
+
+        var firstNode = listNode.FirstOrDefault();
+        if (firstNode is null) return;
+        
+        ImGuiTweaks.Header("Currency Node Overlay Style");
+
+        ImGui.Spacing();
+        ImGui.TextColored(KnownColor.GreenYellow.Vector(), "Modifications will only appear to effect the first warning, but once saved will apply to all warnings");
+        ImGui.Spacing();
+        ImGui.Spacing();
+        
+        using (var child = ImRaii.Child("currency_style", ImGui.GetContentRegionAvail() - new Vector2(0.0f, 33.0f))) {
+            if (child) {
+                firstNode.DrawConfig();
+            }
+        }
+        
+        ImGui.Separator();
+        
+        if (ImGui.Button("Save", ImGuiHelpers.ScaledVector2(100.0f, 23.0f))) {
+            firstNode.Save(OverlayController.CurrencyNodeConfigPath);
+
+            foreach (var node in listNode) {
+                node.Load(OverlayController.CurrencyNodeConfigPath);
+            }
+                
+            listNode.RecalculateLayout();
+        }
+        
+        ImGui.SameLine(ImGui.GetContentRegionMax().X / 2.0f - 75.0f * ImGuiHelpers.GlobalScale);
+        if (ImGui.Button("Refresh Layout", ImGuiHelpers.ScaledVector2(150.0f, 23.0f))) {
+            listNode.RecalculateLayout();
+        }
+
+        if (ImGui.IsItemHovered()) {
+            ImGui.SetTooltip("Triggers a refresh of the UI element to recalculate dynamic element size/positions");
+        }
+        
+        ImGui.SameLine(ImGui.GetContentRegionMax().X - 100.0f * ImGuiHelpers.GlobalScale);
+        ImGuiTweaks.DisabledButton("Reset", () => {
+            foreach (var node in listNode) {
+                node.Load(OverlayController.CurrencyNodeConfigPath);
+            }
+            
+            listNode.RecalculateLayout();
+        });
     }
 }

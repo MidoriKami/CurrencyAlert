@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CurrencyAlert.Classes;
 using CurrencyAlert.Windows;
@@ -43,6 +42,8 @@ public sealed class CurrencyAlertPlugin : IDalamudPlugin {
         Service.ClientState.TerritoryChanged -= OnZoneChange;
         Service.Framework.Update -= OnFrameworkUpdate;
 
+        System.CommandManager.Dispose();
+        System.WindowManager.Dispose();
         System.OverlayController.Dispose();
         System.NativeController.Dispose();
     }
