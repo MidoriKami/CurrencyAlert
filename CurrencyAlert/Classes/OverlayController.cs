@@ -98,6 +98,7 @@ public unsafe class OverlayController : NameplateAddonController {
             .ToList();
 
         var currentWarningCount = activeWarnings.Count;
+        OverlayListNode.EnableEventFlags = OverlayListNode.BackgroundVisible || OverlayListNode.BorderVisible || currentWarningCount > 0;
         
         foreach (var index in Enumerable.Range(0, 10)) {
             var overlayNode = OverlayListNode[index];
