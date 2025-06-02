@@ -78,6 +78,36 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
         }
     }
 
+    public bool ShowIcon {
+        get => currencyIcon.IsVisible;
+        set => currencyIcon.IsVisible = value;
+    }
+
+    public bool ShowText {
+        get => warningText.IsVisible;
+        set => warningText.IsVisible = value;
+    }
+
+    public int TextSize {
+        get => (int) warningText.FontSize;
+        set => warningText.FontSize = (uint) value;
+    }
+
+    public Vector4 TextColor {
+        get => warningText.TextColor;
+        set => warningText.TextColor = value;
+    }
+
+    public bool ShowItemCount {
+        get => currencyIcon.ShowItemCount;
+        set => currencyIcon.ShowItemCount = value;
+    }
+
+    public FontType LabelFont {
+        get => warningText.FontType;
+        set => warningText.FontType = value;
+    }
+
     protected override void Dispose(bool disposing) {
         if (disposing) {
             background.Dispose();
@@ -191,6 +221,11 @@ public class CurrencyIcon : ResNode {
 
     public uint IconId {
         set => currencyIcon.IconId = value;
+    }
+
+    public bool ShowItemCount {
+        get => itemCountText.IsVisible;
+        set => itemCountText.IsVisible = value;
     }
 
     public override void DrawConfig() {

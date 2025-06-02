@@ -13,6 +13,9 @@ using KamiLib.Classes;
 using KamiLib.CommandManager;
 using KamiLib.Window;
 using KamiLib.Window.SelectionWindows;
+using KamiToolKit.Classes;
+using KamiToolKit.Nodes;
+using KamiToolKit.System;
 using Lumina.Excel.Sheets;
 
 namespace CurrencyAlert.Windows;
@@ -128,25 +131,30 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
             _ => KnownColor.White.Vector(),
         };
 
-        using (var _ = ImRaii.Table("CurrentStatusTable", 3)) {
-            ImGui.TableSetupColumn("##CurrentAmount", ImGuiTableColumnFlags.WidthStretch);
-            ImGui.TableSetupColumn("##Slash", ImGuiTableColumnFlags.WidthFixed, 5.0f * ImGuiHelpers.GlobalScale);
-            ImGui.TableSetupColumn("##ThresholdAmount", ImGuiTableColumnFlags.WidthStretch);
-
-            ImGui.TableNextColumn();
-            var text = $"{currentCount}";
-            var currentCountSize = ImGui.CalcTextSize(text);
-            ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - currentCountSize.X);
-            ImGui.TextColored(color, text);
-
-            ImGui.TableNextColumn();
-            ImGui.Text("/");
-
-            ImGui.TableNextColumn();
-            ImGui.Text(threshold.ToString());
-        }
+        DrawCurrentStatusTable(currentCount, color, threshold);
 
         ImGuiHelpers.ScaledDummy(5.0f);
+    }
+
+    private static void DrawCurrentStatusTable(int currentCount, Vector4 color, int threshold) {
+        using var table = ImRaii.Table("CurrentStatusTable", 3);
+        if (!table) return;
+        
+        ImGui.TableSetupColumn("##CurrentAmount", ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn("##Slash", ImGuiTableColumnFlags.WidthFixed, 5.0f * ImGuiHelpers.GlobalScale);
+        ImGui.TableSetupColumn("##ThresholdAmount", ImGuiTableColumnFlags.WidthStretch);
+
+        ImGui.TableNextColumn();
+        var text = $"{currentCount}";
+        var currentCountSize = ImGui.CalcTextSize(text);
+        ImGui.SetCursorPosX(ImGui.GetContentRegionAvail().X - currentCountSize.X);
+        ImGui.TextColored(color, text);
+
+        ImGui.TableNextColumn();
+        ImGui.Text("/");
+
+        ImGui.TableNextColumn();
+        ImGui.Text(threshold.ToString());
     }
 
     private void DrawSettings(TrackedCurrency currency) {
@@ -175,7 +183,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
         configChanged |= ImGui.InputInt($"Threshold", ref currency.Threshold, 0, 0);
 
         ImGui.SetCursorPosY(ImGui.GetContentRegionMax().Y - 23.0f * ImGuiHelpers.GlobalScale);
-        using (var _ = ImRaii.Disabled(!(ImGui.GetIO().KeyShift && ImGui.GetIO().KeyCtrl && currency.CanRemove))) {
+        using (ImRaii.Disabled(!(ImGui.GetIO().KeyShift && ImGui.GetIO().KeyCtrl && currency.CanRemove))) {
             if (ImGuiTweaks.IconButtonWithSize(Service.PluginInterface.UiBuilder.IconFontFixedWidthHandle, FontAwesomeIcon.Trash, "Delete", new Vector2(ImGui.GetContentRegionAvail().X, 23.0f * ImGuiHelpers.GlobalScale))) {
                 System.Config.Currencies.Remove(currency);
                 DeselectItem();
@@ -246,6 +254,11 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
             System.WindowManager.RemoveWindow(existingWindow);
         }
     }
+
+    public override void OnClose() {
+        System.OverlayController.OverlayListNode?.Save(OverlayController.ListNodeConfigPath);
+        System.OverlayController.OverlayListNode?.FirstOrDefault()?.Save(OverlayController.CurrencyNodeConfigPath);
+    }
 }
 
 public class GeneralSettingsTab : ITabItem {
@@ -282,33 +295,168 @@ public class ListNodeSettingsTab : ITabItem {
         if (listNode is null) return;
         
         ImGuiTweaks.Header("Warning List Overlay Style");
-        using (var child = ImRaii.Child("list_config", ImGui.GetContentRegionAvail() - new Vector2(0.0f, 33.0f))) {
-            if (child) {
-                listNode.DrawConfig();
+        DrawListConfig(listNode);
+        
+        listNode.RecalculateLayout();
+    }
+
+    private static void DrawListConfig(ListNode<CurrencyWarningNode> listNode) {
+        using var tabBar = ImRaii.TabBar("mode_select_tab_bar");
+        if (!tabBar) return;
+
+        DrawSimpleModeConfig(listNode);
+        DrawAdvancedConfig(listNode);
+    }
+
+    private static void DrawSimpleModeConfig(ListNode<CurrencyWarningNode> listNode) {
+        using var tabItem = ImRaii.TabItem("Simple Mode");
+        if (!tabItem) return;
+        
+        using var tabChild = ImRaii.Child("tabChild", ImGui.GetContentRegionAvail());
+        if (!tabChild) return;
+        
+        using var table = ImRaii.Table("simple_mode_table", 2);
+        if (!table) return;
+        
+        ImGui.TableSetupColumn("##label", ImGuiTableColumnFlags.WidthStretch, 1.0f);
+        ImGui.TableSetupColumn("##config", ImGuiTableColumnFlags.WidthStretch, 2.0f);
+                
+        ImGui.TableNextRow();
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Position");
+                        
+        ImGui.TableNextColumn();
+        var position = listNode.Position;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.DragFloat2("##position", ref position, 0.75f, 0.0f, 5000.0f)) {
+            listNode.Position = position;
+        }
+        
+        ImGui.TableNextColumn();
+        ImGui.Text("Size");
+                
+        ImGui.TableNextColumn();
+        var size = listNode.Size;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.DragFloat2("##size", ref size, 0.75f, 0.0f, 5000.0f)) {
+            listNode.Size = size;
+        }
+             
+        ImGui.TableNextColumn();
+        ImGui.Text("Scale");
+        
+        ImGui.TableNextColumn();
+        ImGuiTweaks.SetFullWidth();
+        var scale = listNode.Scale.X;
+        if (ImGui.DragFloat("##Scale", ref scale, 0.005f, 0.10f, 3.0f)) {
+            listNode.ScaleX = scale;
+            listNode.ScaleY = scale;
+        }
+        
+        ImGui.TableNextColumn();
+        ImGui.Text("Background Color");
+                
+        ImGui.TableNextColumn();
+        var backgroundColor = listNode.BackgroundColor;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.ColorEdit4("##BackgroundColor", ref backgroundColor, ImGuiColorEditFlags.AlphaPreviewHalf)) {
+            listNode.BackgroundColor = backgroundColor;
+        }
+                
+        ImGui.TableNextColumn();
+        ImGui.Text("List Orientation");
+                
+        ImGui.TableNextColumn();
+        var orientation = listNode.LayoutOrientation;
+        ImGuiTweaks.SetFullWidth();
+        if (ComboHelper.EnumCombo("##Orientation", ref orientation)) {
+            listNode.LayoutOrientation = orientation;
+        }
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Anchor Corner");
+                
+        ImGui.TableNextColumn();
+        var anchor = listNode.LayoutAnchor;
+        ImGuiTweaks.SetFullWidth();
+        if (ComboHelper.EnumCombo("##Anchor", ref anchor)) {
+            listNode.LayoutAnchor = anchor;
+        }
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Category Vertical Spacing");
+        
+        ImGui.TableNextColumn();
+        var categorySpacing = listNode.Margin.Top;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.DragFloat("##VerticalSpacing", ref categorySpacing, 0.10f, -5.0f, 5000.0f)) {
+            listNode.Margin.Top = categorySpacing;
+
+            listNode.ItemMargin = new Spacing(0.0f);
+            
+            foreach (var node in listNode) {
+                node.Margin.Top = categorySpacing;
+                node.Margin.Bottom = 0.0f;
+            }
+        }
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Category Horizontal Spacing");
+                
+        ImGui.TableNextColumn();
+        var horizontalSpacing = listNode.Margin.Left;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.DragFloat("##HorizontalSpacing", ref horizontalSpacing, 0.10f, -10.0f, 5000.0f)) {
+            listNode.Margin.Left = horizontalSpacing;
+
+            listNode.ItemMargin = new Spacing(0.0f);
+            
+            foreach (var node in listNode) {
+                node.Margin.Left = horizontalSpacing;
+                node.Margin.Right = 0.0f;
             }
         }
         
-        ImGui.Separator();
-        
-        if (ImGui.Button("Save", ImGuiHelpers.ScaledVector2(100.0f, 23.0f))) {
-            listNode.Save(OverlayController.ListNodeConfigPath);
-            listNode.RecalculateLayout();
-        }
-        
-        ImGui.SameLine(ImGui.GetContentRegionMax().X / 2.0f - 75.0f * ImGuiHelpers.GlobalScale);
-        if (ImGui.Button("Refresh Layout", ImGuiHelpers.ScaledVector2(150.0f, 23.0f))) {
-            listNode.RecalculateLayout();
-        }
+        ImGui.TableNextColumn();
+        ImGui.Text("Show Background");
 
-        if (ImGui.IsItemHovered()) {
-            ImGui.SetTooltip("Triggers a refresh of the UI element to recalculate dynamic element size/positions");
+        ImGui.TableNextColumn();
+        var background = listNode.BackgroundVisible;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.Checkbox("##BackgroundVisible", ref background)) {
+            listNode.BackgroundVisible = background;
+        }
+                
+        ImGui.TableNextColumn();
+        ImGui.Text("Show Border");
+
+        ImGui.TableNextColumn();
+        var border = listNode.BorderVisible;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.Checkbox("##BorderVisible", ref border)) {
+            listNode.BorderVisible = border;
         }
         
-        ImGui.SameLine(ImGui.GetContentRegionMax().X - 100.0f * ImGuiHelpers.GlobalScale);
-        ImGuiTweaks.DisabledButton("Reset", () => {
-            listNode.Load(OverlayController.ListNodeConfigPath);
-            listNode.RecalculateLayout();
-        });
+        ImGui.TableNextColumn();
+        ImGui.Text("Enable");
+
+        ImGui.TableNextColumn();
+        var enable = listNode.IsVisible;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.Checkbox("##Enable", ref enable)) {
+            listNode.IsVisible = enable;
+        }
+    }
+    
+    private static void DrawAdvancedConfig(ListNode<CurrencyWarningNode> listNode) {
+        using var tabItem = ImRaii.TabItem("Advanced Mode");
+        if (!tabItem) return;
+        
+        using var tabChild = ImRaii.Child("tabChild", ImGui.GetContentRegionAvail());
+        if (!tabChild) return;
+        
+        listNode.DrawConfig();
     }
 }
 
@@ -323,48 +471,115 @@ public class CurrencyNodeSettingsTab : ITabItem {
 
         var firstNode = listNode.FirstOrDefault();
         if (firstNode is null) return;
-        
+                
         ImGuiTweaks.Header("Currency Node Overlay Style");
+
+        using var tabBar = ImRaii.TabBar("mode_select_tab_bar");
+        if (!tabBar) return;
+        
+        DrawSimpleModeConfig(firstNode, listNode);
+        
+        DrawAdvancedModeConfig(firstNode);
+        
+        listNode.RecalculateLayout();
+    }
+
+    private void DrawSimpleModeConfig(CurrencyWarningNode firstNode, ListNode<CurrencyWarningNode> listNode) {
+        using var tabItem = ImRaii.TabItem("Simple Mode");
+        if (!tabItem) return;
+        
+        using var tabChild = ImRaii.Child("tabChild");
+        if (!tabChild) return;
+        
+        using var table = ImRaii.Table("simple_mode_table", 2);
+        if (!table) return;
+        
+        ImGui.TableSetupColumn("##label", ImGuiTableColumnFlags.WidthStretch, 1.0f);
+        ImGui.TableSetupColumn("##config", ImGuiTableColumnFlags.WidthStretch, 2.0f);
+                
+        ImGui.TableNextRow();
+        
+        ImGui.TableNextColumn();
+        ImGui.Text("Text Color");
+        
+        ImGui.TableNextColumn();
+        var textColor = firstNode.TextColor;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.ColorEdit4("##TextColor", ref textColor, ImGuiColorEditFlags.AlphaPreviewHalf)) {
+            firstNode.TextColor = textColor;
+        }
+        
+        ImGui.TableNextColumn();
+        ImGui.Text("Text Font");
+        
+        ImGui.TableNextColumn();
+        var textFont = firstNode.LabelFont;
+        ImGuiTweaks.SetFullWidth();
+        if (ComboHelper.EnumCombo("##TextFont", ref textFont)) {
+            firstNode.LabelFont = textFont;
+        }
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Text Size");
+        
+        ImGui.TableNextColumn();
+        var textSize = firstNode.TextSize;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.InputInt("##TextSize", ref textSize)) {
+            firstNode.TextSize = textSize;
+        }
+        
+        ImGui.TableNextColumn();
+        ImGui.Text("Show Icon");
+        
+        ImGui.TableNextColumn();
+        var showIcon = firstNode.ShowIcon;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.Checkbox("##ShowIcon", ref showIcon)) {
+            firstNode.ShowIcon = showIcon;
+        }
+        
+        ImGui.TableNextColumn();
+        ImGui.Text("Show Text");
+        
+        ImGui.TableNextColumn();
+        var showText = firstNode.ShowText;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.Checkbox("##ShowText", ref showText)) {
+            firstNode.ShowText = showText;
+        }
+        
+        ImGui.TableNextColumn();
+        ImGui.Text("Show Item Count");
+
+        ImGui.TableNextColumn();
+        var showItemCount = firstNode.ShowItemCount;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.Checkbox("##ShowItemCount", ref showItemCount)) {
+            firstNode.ShowItemCount = showItemCount;
+        }
+        
+        ApplyAll(firstNode, listNode);
+    }
+
+    private void ApplyAll(CurrencyWarningNode referenceNode, ListNode<CurrencyWarningNode> listNode) {
+        foreach (var node in listNode) {
+            node.Load(referenceNode);
+        }
+    }
+
+    private void DrawAdvancedModeConfig(CurrencyWarningNode firstNode) {
+        using var tabItem = ImRaii.TabItem("Advanced Mode");
+        if (!tabItem) return;
+        
+        using var tabChild = ImRaii.Child("tabChild");
+        if (!tabChild) return;
 
         ImGui.Spacing();
         ImGui.TextColored(KnownColor.GreenYellow.Vector(), "Modifications will only appear to effect the first warning, but once saved will apply to all warnings");
         ImGui.Spacing();
         ImGui.Spacing();
         
-        using (var child = ImRaii.Child("currency_style", ImGui.GetContentRegionAvail() - new Vector2(0.0f, 33.0f))) {
-            if (child) {
-                firstNode.DrawConfig();
-            }
-        }
-        
-        ImGui.Separator();
-        
-        if (ImGui.Button("Save", ImGuiHelpers.ScaledVector2(100.0f, 23.0f))) {
-            firstNode.Save(OverlayController.CurrencyNodeConfigPath);
-
-            foreach (var node in listNode) {
-                node.Load(OverlayController.CurrencyNodeConfigPath);
-            }
-                
-            listNode.RecalculateLayout();
-        }
-        
-        ImGui.SameLine(ImGui.GetContentRegionMax().X / 2.0f - 75.0f * ImGuiHelpers.GlobalScale);
-        if (ImGui.Button("Refresh Layout", ImGuiHelpers.ScaledVector2(150.0f, 23.0f))) {
-            listNode.RecalculateLayout();
-        }
-
-        if (ImGui.IsItemHovered()) {
-            ImGui.SetTooltip("Triggers a refresh of the UI element to recalculate dynamic element size/positions");
-        }
-        
-        ImGui.SameLine(ImGui.GetContentRegionMax().X - 100.0f * ImGuiHelpers.GlobalScale);
-        ImGuiTweaks.DisabledButton("Reset", () => {
-            foreach (var node in listNode) {
-                node.Load(OverlayController.CurrencyNodeConfigPath);
-            }
-            
-            listNode.RecalculateLayout();
-        });
+        firstNode.DrawConfig();
     }
 }
