@@ -4,7 +4,6 @@ using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using KamiToolKit.Classes;
 using KamiToolKit.Nodes;
 using KamiToolKit.System;
 using Newtonsoft.Json;
@@ -30,7 +29,7 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
             IsVisible = false,
         };
 
-        System.NativeController.AttachToNode(background, this, NodePosition.AsLastChild);
+        System.NativeController.AttachNode(background, this);
 
         currencyIcon = new CurrencyIcon {
             Position = new Vector2(5.0f, 0.0f),
@@ -39,7 +38,7 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
             Margin = new Spacing { Right = 15.0f },
         };
 
-        System.NativeController.AttachToNode(currencyIcon, this, NodePosition.AsLastChild);
+        System.NativeController.AttachNode(currencyIcon, this);
 
         warningText = new TextNode {
             NodeId = 130_000 + baseId,
@@ -53,7 +52,7 @@ public class CurrencyWarningNode : NodeBase<AtkResNode> {
             IsVisible = true,
         };
 
-        System.NativeController.AttachToNode(warningText, this, NodePosition.AsLastChild);
+        System.NativeController.AttachNode(warningText, this);
     }
 
     private TrackedCurrency? InternalCurrency { get; set; }
@@ -185,7 +184,7 @@ public class CurrencyIcon : ResNode {
             IsVisible = true,
         };
 
-        System.NativeController.AttachToNode(currencyIcon, this, NodePosition.AsLastChild);
+        System.NativeController.AttachNode(currencyIcon, this);
         
         itemCountText = new TextNode {
             NodeId = 140_000,
@@ -199,7 +198,7 @@ public class CurrencyIcon : ResNode {
             IsVisible = true,
         };
         
-        System.NativeController.AttachToNode(itemCountText, this, NodePosition.AsLastChild);
+        System.NativeController.AttachNode(itemCountText, this);
     }
 
     protected override void Dispose(bool disposing) {

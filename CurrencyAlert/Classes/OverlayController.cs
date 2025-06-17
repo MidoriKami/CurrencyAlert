@@ -15,7 +15,7 @@ using KamiToolKit.System;
 namespace CurrencyAlert.Classes;
 
 public unsafe class OverlayController : NameplateAddonController {
-    public ListNode<CurrencyWarningNode>? OverlayListNode { get; private set; }
+    public ListBoxNode<CurrencyWarningNode>? OverlayListNode { get; private set; }
 
     internal static string ListNodeConfigPath 
         => Path.Combine(Service.PluginInterface.ConfigDirectory.FullName, "ListNode.style.json");
@@ -38,7 +38,7 @@ public unsafe class OverlayController : NameplateAddonController {
     }
 
     private void AttachNodes(AddonNamePlate* addonNamePlate) {
-        OverlayListNode = new ListNode<CurrencyWarningNode> {
+        OverlayListNode = new ListBoxNode<CurrencyWarningNode> {
             NodeId = 100_000,
             LayoutAnchor = LayoutAnchor.TopLeft,
             BackgroundColor = KnownColor.CornflowerBlue.Vector() with { W = 0.33f },
@@ -62,12 +62,12 @@ public unsafe class OverlayController : NameplateAddonController {
             
             newOverlayNode.Load(CurrencyNodeConfigPath);
             
-            newOverlayNode.AddEvent(AddonEventType.MouseClick, System.ConfigurationWindow.UnCollapseOrToggle);
-            newOverlayNode.EnableEvents(Service.AddonEventManager, (AtkUnitBase*) addonNamePlate);
+            newOverlayNode.AddEvent(AddonEventType.MouseClick, _ => System.ConfigurationWindow.UnCollapseOrToggle() );
+            newOverlayNode.EnableEvents((AtkUnitBase*) addonNamePlate);
             OverlayListNode.Add(newOverlayNode);
         }
 
-        System.NativeController.AttachToAddon(OverlayListNode, (AtkUnitBase*) addonNamePlate, addonNamePlate->RootNode, NodePosition.AsFirstChild);
+        System.NativeController.AttachNode(OverlayListNode, addonNamePlate->RootNode, NodePosition.AsFirstChild);
 
         OverlayListNode.RecalculateLayout();
     }
@@ -75,9 +75,10 @@ public unsafe class OverlayController : NameplateAddonController {
     private void DetachNodes(AddonNamePlate* addonNamePlate) {
         if (OverlayListNode is null) return;
 
-        System.NativeController.DetachFromAddon(OverlayListNode, (AtkUnitBase*) addonNamePlate);
-        OverlayListNode.Dispose();
-        OverlayListNode = null;
+        System.NativeController.DetachNode(OverlayListNode, () => {
+            OverlayListNode.Dispose();
+            OverlayListNode = null;
+        });
     }
 
     public void Update() {

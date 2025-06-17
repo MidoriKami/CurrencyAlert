@@ -300,7 +300,7 @@ public class ListNodeSettingsTab : ITabItem {
         listNode.RecalculateLayout();
     }
 
-    private static void DrawListConfig(ListNode<CurrencyWarningNode> listNode) {
+    private static void DrawListConfig(ListBoxNode<CurrencyWarningNode> listNode) {
         using var tabBar = ImRaii.TabBar("mode_select_tab_bar");
         if (!tabBar) return;
 
@@ -308,7 +308,7 @@ public class ListNodeSettingsTab : ITabItem {
         DrawAdvancedConfig(listNode);
     }
 
-    private static void DrawSimpleModeConfig(ListNode<CurrencyWarningNode> listNode) {
+    private static void DrawSimpleModeConfig(ListBoxNode<CurrencyWarningNode> listNode) {
         using var tabItem = ImRaii.TabItem("Simple Mode");
         if (!tabItem) return;
         
@@ -449,7 +449,7 @@ public class ListNodeSettingsTab : ITabItem {
         }
     }
     
-    private static void DrawAdvancedConfig(ListNode<CurrencyWarningNode> listNode) {
+    private static void DrawAdvancedConfig(ListBoxNode<CurrencyWarningNode> listNode) {
         using var tabItem = ImRaii.TabItem("Advanced Mode");
         if (!tabItem) return;
         
@@ -484,7 +484,7 @@ public class CurrencyNodeSettingsTab : ITabItem {
         listNode.RecalculateLayout();
     }
 
-    private void DrawSimpleModeConfig(CurrencyWarningNode firstNode, ListNode<CurrencyWarningNode> listNode) {
+    private void DrawSimpleModeConfig(CurrencyWarningNode firstNode, ListBoxNode<CurrencyWarningNode> listNode) {
         using var tabItem = ImRaii.TabItem("Simple Mode");
         if (!tabItem) return;
         
@@ -562,7 +562,7 @@ public class CurrencyNodeSettingsTab : ITabItem {
         ApplyAll(firstNode, listNode);
     }
 
-    private void ApplyAll(CurrencyWarningNode referenceNode, ListNode<CurrencyWarningNode> listNode) {
+    private void ApplyAll(CurrencyWarningNode referenceNode, ListBoxNode<CurrencyWarningNode> listNode) {
         foreach (var node in listNode) {
             node.Load(referenceNode);
         }
