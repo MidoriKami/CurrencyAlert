@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json.Serialization;
-using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using FFXIVClientStructs.FFXIV.Client.Game;
@@ -20,7 +20,6 @@ public enum CurrencyType {
 public unsafe class TrackedCurrency {
     private uint? iconId;
     private uint? itemId;
-    private string? label;
 
     public required CurrencyType Type { get; init; }
 
@@ -54,7 +53,8 @@ public unsafe class TrackedCurrency {
 
     public string WarningText = "Above Threshold";
 
-    [JsonIgnore] public string Name => label ??= Service.DataManager.GetExcelSheet<Item>().GetRow(ItemId).Name.ExtractText();
+    [JsonIgnore] [field: AllowNull, MaybeNull] 
+    public string Name => field ??= Service.DataManager.GetExcelSheet<Item>().GetRow(ItemId).Name.ExtractText();
 
     [JsonIgnore] public bool CanRemove => Type is not (CurrencyType.LimitedTomestone or CurrencyType.NonLimitedTomestone);
 
