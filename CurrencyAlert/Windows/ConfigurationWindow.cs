@@ -14,8 +14,6 @@ using KamiLib.CommandManager;
 using KamiLib.Window;
 using KamiLib.Window.SelectionWindows;
 using KamiToolKit.Classes;
-using KamiToolKit.Nodes;
-using KamiToolKit.System;
 using Lumina.Excel.Sheets;
 
 namespace CurrencyAlert.Windows;
@@ -255,10 +253,11 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
         }
     }
 
-    public override void OnClose() {
-        System.OverlayController.OverlayListNode?.Save(OverlayController.ListNodeConfigPath);
-        System.OverlayController.OverlayListNode?.FirstOrDefault()?.Save(OverlayController.CurrencyNodeConfigPath);
-    }
+    public override void OnClose()
+        => System.OverlayController.Save();
+
+    public override void OnTabChanged()
+        => System.OverlayController.Save();
 }
 
 public class GeneralSettingsTab : ITabItem {
@@ -293,28 +292,24 @@ public class ListNodeSettingsTab : ITabItem {
     public void Draw() {
         var listNode = System.OverlayController.OverlayListNode;
         if (listNode is null) return;
+                
+        ImGuiTweaks.Header("Resize/Reposition");
+
+        var enableMoving = listNode.EnableMoving;
+        if (ImGui.Checkbox("Allow Moving", ref enableMoving)) {
+            listNode.EnableMoving = enableMoving;
+        }
+        
+        var enableResizing = listNode.EnableResizing;
+        if (ImGui.Checkbox("Allow Resizing", ref enableResizing)) {
+            listNode.EnableResizing = enableResizing;
+        }
         
         ImGuiTweaks.Header("Warning List Overlay Style");
-        DrawListConfig(listNode);
-        
-        listNode.RecalculateLayout();
-    }
-
-    private static void DrawListConfig(ListBoxNode<CurrencyWarningNode> listNode) {
-        using var tabBar = ImRaii.TabBar("mode_select_tab_bar");
-        if (!tabBar) return;
-
         DrawSimpleModeConfig(listNode);
-        DrawAdvancedConfig(listNode);
     }
 
-    private static void DrawSimpleModeConfig(ListBoxNode<CurrencyWarningNode> listNode) {
-        using var tabItem = ImRaii.TabItem("Simple Mode");
-        if (!tabItem) return;
-        
-        using var tabChild = ImRaii.Child("tabChild", ImGui.GetContentRegionAvail());
-        if (!tabChild) return;
-        
+    private static void DrawSimpleModeConfig(OverlayListNode listNode) {
         using var table = ImRaii.Table("simple_mode_table", 2);
         if (!table) return;
         
@@ -375,67 +370,33 @@ public class ListNodeSettingsTab : ITabItem {
         }
 
         ImGui.TableNextColumn();
-        ImGui.Text("Anchor Corner");
-                
-        ImGui.TableNextColumn();
-        var anchor = listNode.LayoutAnchor;
-        ImGuiTweaks.SetFullWidth();
-        if (ComboHelper.EnumCombo("##Anchor", ref anchor)) {
-            listNode.LayoutAnchor = anchor;
-        }
-
-        ImGui.TableNextColumn();
-        ImGui.Text("Category Vertical Spacing");
+        ImGui.Text("Item Spacing");
         
         ImGui.TableNextColumn();
-        var categorySpacing = listNode.Margin.Top;
+        var categorySpacing = listNode.ItemSpacing;
         ImGuiTweaks.SetFullWidth();
-        if (ImGui.DragFloat("##VerticalSpacing", ref categorySpacing, 0.10f, -5.0f, 5000.0f)) {
-            listNode.Margin.Top = categorySpacing;
-
-            listNode.ItemMargin = new Spacing(0.0f);
-            
-            foreach (var node in listNode) {
-                node.Margin.Top = categorySpacing;
-                node.Margin.Bottom = 0.0f;
-            }
+        if (ImGui.DragFloat("##ItemSpacing", ref categorySpacing, 0.10f, -15.0f, 5000.0f)) {
+            listNode.ItemSpacing = categorySpacing;
         }
 
-        ImGui.TableNextColumn();
-        ImGui.Text("Category Horizontal Spacing");
-                
-        ImGui.TableNextColumn();
-        var horizontalSpacing = listNode.Margin.Left;
-        ImGuiTweaks.SetFullWidth();
-        if (ImGui.DragFloat("##HorizontalSpacing", ref horizontalSpacing, 0.10f, -10.0f, 5000.0f)) {
-            listNode.Margin.Left = horizontalSpacing;
-
-            listNode.ItemMargin = new Spacing(0.0f);
-            
-            foreach (var node in listNode) {
-                node.Margin.Left = horizontalSpacing;
-                node.Margin.Right = 0.0f;
-            }
-        }
-        
         ImGui.TableNextColumn();
         ImGui.Text("Show Background");
-
+        
         ImGui.TableNextColumn();
-        var background = listNode.BackgroundVisible;
+        var background = listNode.ShowBackground;
         ImGuiTweaks.SetFullWidth();
         if (ImGui.Checkbox("##BackgroundVisible", ref background)) {
-            listNode.BackgroundVisible = background;
+            listNode.ShowBackground = background;
         }
-                
+
         ImGui.TableNextColumn();
         ImGui.Text("Show Border");
 
         ImGui.TableNextColumn();
-        var border = listNode.BorderVisible;
+        var border = listNode.ShowBorder;
         ImGuiTweaks.SetFullWidth();
         if (ImGui.Checkbox("##BorderVisible", ref border)) {
-            listNode.BorderVisible = border;
+            listNode.ShowBorder = border;
         }
         
         ImGui.TableNextColumn();
@@ -448,16 +409,6 @@ public class ListNodeSettingsTab : ITabItem {
             listNode.IsVisible = enable;
         }
     }
-    
-    private static void DrawAdvancedConfig(ListBoxNode<CurrencyWarningNode> listNode) {
-        using var tabItem = ImRaii.TabItem("Advanced Mode");
-        if (!tabItem) return;
-        
-        using var tabChild = ImRaii.Child("tabChild", ImGui.GetContentRegionAvail());
-        if (!tabChild) return;
-        
-        listNode.DrawConfig();
-    }
 }
 
 public class CurrencyNodeSettingsTab : ITabItem {
@@ -469,28 +420,14 @@ public class CurrencyNodeSettingsTab : ITabItem {
         var listNode = System.OverlayController.OverlayListNode;
         if (listNode is null) return;
 
-        var firstNode = listNode.FirstOrDefault();
+        var firstNode = listNode.NodeList.FirstOrDefault();
         if (firstNode is null) return;
                 
         ImGuiTweaks.Header("Currency Node Overlay Style");
-
-        using var tabBar = ImRaii.TabBar("mode_select_tab_bar");
-        if (!tabBar) return;
-        
         DrawSimpleModeConfig(firstNode, listNode);
-        
-        DrawAdvancedModeConfig(firstNode);
-        
-        listNode.RecalculateLayout();
     }
 
-    private void DrawSimpleModeConfig(CurrencyWarningNode firstNode, ListBoxNode<CurrencyWarningNode> listNode) {
-        using var tabItem = ImRaii.TabItem("Simple Mode");
-        if (!tabItem) return;
-        
-        using var tabChild = ImRaii.Child("tabChild");
-        if (!tabChild) return;
-        
+    private void DrawSimpleModeConfig(CurrencyWarningNode firstNode, OverlayListNode overlayNode) {
         using var table = ImRaii.Table("simple_mode_table", 2);
         if (!table) return;
         
@@ -559,27 +496,13 @@ public class CurrencyNodeSettingsTab : ITabItem {
             firstNode.ShowItemCount = showItemCount;
         }
         
-        ApplyAll(firstNode, listNode);
+        ApplyAll(firstNode, overlayNode);
     }
 
-    private void ApplyAll(CurrencyWarningNode referenceNode, ListBoxNode<CurrencyWarningNode> listNode) {
-        foreach (var node in listNode) {
+    private void ApplyAll(CurrencyWarningNode referenceNode, OverlayListNode overlayListNode) {
+        foreach (var node in overlayListNode.NodeList) {
             node.Load(referenceNode);
+            node.RecalculateLayout();
         }
-    }
-
-    private void DrawAdvancedModeConfig(CurrencyWarningNode firstNode) {
-        using var tabItem = ImRaii.TabItem("Advanced Mode");
-        if (!tabItem) return;
-        
-        using var tabChild = ImRaii.Child("tabChild");
-        if (!tabChild) return;
-
-        ImGui.Spacing();
-        ImGui.TextColored(KnownColor.GreenYellow.Vector(), "Modifications will only appear to effect the first warning, but once saved will apply to all warnings");
-        ImGui.Spacing();
-        ImGui.Spacing();
-        
-        firstNode.DrawConfig();
     }
 }

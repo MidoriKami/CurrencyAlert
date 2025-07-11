@@ -32,7 +32,6 @@ public sealed class CurrencyAlertPlugin : IDalamudPlugin {
         System.WindowManager.AddWindow(System.ConfigurationWindow, WindowFlags.IsConfigWindow | WindowFlags.RequireLoggedIn);
 
         System.OverlayController = new OverlayController();
-        System.OverlayController.Enable();
 
         Service.ClientState.TerritoryChanged += OnZoneChange;
         Service.Framework.Update += OnFrameworkUpdate;
