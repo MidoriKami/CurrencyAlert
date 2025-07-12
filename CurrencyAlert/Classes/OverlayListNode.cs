@@ -7,6 +7,7 @@ using Dalamud.Game.Addon.Events;
 using Dalamud.Interface;
 using KamiToolKit.Classes;
 using KamiToolKit.Nodes;
+using KamiToolKit.System;
 using Newtonsoft.Json;
 
 namespace CurrencyAlert.Classes;
@@ -16,7 +17,7 @@ public class OverlayListNode : SimpleComponentNode {
 
 	[JsonProperty] private readonly BackgroundImageNode backgroundImageNode;
 	[JsonProperty] private readonly NineGridNode borderNode;
-	[JsonProperty] private LayoutListNode<CurrencyWarningNode> listNode;
+	[JsonProperty] private LayoutListNode<NodeBase> listNode;
 
 	public readonly List<CurrencyWarningNode> NodeList = [];
 
@@ -36,7 +37,7 @@ public class OverlayListNode : SimpleComponentNode {
 		};
 		System.NativeController.AttachNode(borderNode, this);
 
-		listNode = new VerticalListNode<CurrencyWarningNode>();
+		listNode = new VerticalListNode();
 		
 		RebuildListNode();
 	}
@@ -136,13 +137,13 @@ public class OverlayListNode : SimpleComponentNode {
 		NodeList.Clear();
 		
 		if (LayoutOrientation is LayoutMode.Vertical) {
-			listNode = new VerticalListNode<CurrencyWarningNode> {
+			listNode = new VerticalListNode {
 				NodeId = 4,
 				Alignment = VerticalListAnchor.Top,
 			};
 		}
 		else {
-			listNode = new HorizontalListNode<CurrencyWarningNode> {
+			listNode = new HorizontalListNode {
 				NodeId = 4,
 				Alignment = HorizontalListAnchor.Left,
 			};
