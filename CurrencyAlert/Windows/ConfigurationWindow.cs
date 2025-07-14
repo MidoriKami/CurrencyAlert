@@ -375,7 +375,7 @@ public class ListNodeSettingsTab : ITabItem {
         ImGui.TableNextColumn();
         var categorySpacing = listNode.ItemSpacing;
         ImGuiTweaks.SetFullWidth();
-        if (ImGui.DragFloat("##ItemSpacing", ref categorySpacing, 0.10f, -15.0f, 5000.0f)) {
+        if (ImGui.DragFloat("##ItemSpacing", ref categorySpacing, 0.10f, -30.0f, 5000.0f)) {
             listNode.ItemSpacing = categorySpacing;
         }
 

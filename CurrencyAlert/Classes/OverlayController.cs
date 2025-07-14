@@ -30,12 +30,11 @@ public unsafe class OverlayController : NameplateAddonController {
 
     private void AttachNodes(AddonNamePlate* addonNamePlate) {
         OverlayListNode = new OverlayListNode {
-            NodeId = 100000,
+            NodeId = 100000001,
             Size = new Vector2(600.0f, 200.0f),
             Position = new Vector2(1920.0f, 1024.0f) / 2.0f,
             IsVisible = true,
         };
-        
         OverlayListNode.Load(ListNodeConfigPath);
         System.NativeController.AttachNode(OverlayListNode, addonNamePlate->RootNode, NodePosition.AsFirstChild);
     }
