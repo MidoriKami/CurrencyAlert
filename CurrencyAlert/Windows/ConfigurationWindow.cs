@@ -368,6 +368,26 @@ public class ListNodeSettingsTab : ITabItem {
         if (ComboHelper.EnumCombo("##Orientation", ref orientation)) {
             listNode.LayoutOrientation = orientation;
         }
+        
+        ImGui.TableNextColumn();
+        ImGui.Text("List Anchor");
+                
+        ImGui.TableNextColumn();
+        var anchor = listNode.LayoutAnchor;
+        ImGuiTweaks.SetFullWidth();
+        if (ComboHelper.EnumCombo("##Anchor", ref anchor)) {
+            listNode.LayoutAnchor = anchor;
+        }
+        
+        ImGui.TableNextColumn();
+        ImGui.Text("First Item Spacing");
+        
+        ImGui.TableNextColumn();
+        var firstItemSpacing = listNode.FirstItemSpacing;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.DragFloat("##FirstItemSpacing", ref firstItemSpacing, 0.10f, -30.0f, 5000.0f)) {
+            listNode.FirstItemSpacing = firstItemSpacing;
+        }
 
         ImGui.TableNextColumn();
         ImGui.Text("Item Spacing");

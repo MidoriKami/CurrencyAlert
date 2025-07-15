@@ -78,6 +78,16 @@ public class OverlayListNode : SimpleComponentNode {
 		set => listNode.ShowBorder = value;
 	}
 
+	public LayoutAnchor LayoutAnchor {
+		get => listNode.LayoutAnchor;
+		set => listNode.LayoutAnchor = value;
+	}
+
+	public float FirstItemSpacing {
+		get => listNode.FirstItemSpacing;
+		set => listNode.FirstItemSpacing = value;
+	}
+
 	public void UpdateWarnings(List<TrackedCurrency> activeWarnings) {
 		// Get a list of warnings that we need to remove
 		var oldWarnings = NodeList.Where(node => activeWarnings.All(warning => warning != node.Currency)).ToList();
