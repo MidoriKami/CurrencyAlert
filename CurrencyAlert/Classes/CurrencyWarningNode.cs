@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Numerics;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -15,6 +16,8 @@ public class CurrencyWarningNode : SimpleComponentNode {
     [JsonProperty] private readonly TextNode warningText;
     [JsonProperty] private readonly CurrencyIconNode currencyIcon;
 
+	private static string CurrencyNodeConfigPath => Path.Combine(Service.PluginInterface.ConfigDirectory.FullName, "CurrencyNode.style.json");
+    
     public CurrencyWarningNode() {
         Margin = new Spacing(5.0f);
 
@@ -138,4 +141,10 @@ public class CurrencyWarningNode : SimpleComponentNode {
         currencyIcon.Y = Height / 2.0f - currencyIcon.Height / 2.0f;
         warningText.Y = Height / 2.0f - warningText.Height / 2.0f;
     }
+
+    public void Load()
+        => Load(CurrencyNodeConfigPath);
+
+    public void Save()
+        => Save(CurrencyNodeConfigPath);
 }

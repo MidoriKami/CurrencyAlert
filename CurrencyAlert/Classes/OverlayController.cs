@@ -16,7 +16,16 @@ public unsafe class OverlayController : NameplateAddonController {
 
     private static string ListNodeConfigPath => Path.Combine(Service.PluginInterface.ConfigDirectory.FullName, "ListNode.style.json");
     
+    public readonly CurrencyWarningNode SampleNode = new() {
+        Height = 32.0f,
+        IsVisible = true,
+        EnableEventFlags = true,
+        Tooltip = "Overlay from CurrencyAlert plugin",
+    };
+
     public OverlayController() : base(Service.PluginInterface) {
+        SampleNode.Load();
+        
         OnAttach += AttachNodes;
         OnDetach += DetachNodes;
 
@@ -65,6 +74,6 @@ public unsafe class OverlayController : NameplateAddonController {
 
     public void Save() {
         OverlayListNode?.Save(ListNodeConfigPath);
-        OverlayListNode?.SaveCurrencyWarningNode();
+        SampleNode.Save();
     }
 }

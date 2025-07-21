@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Game.Addon.Events;
@@ -15,8 +14,6 @@ public class OverlayListNode : SimpleComponentNode {
 	[JsonProperty] private ListBoxNode listNode;
 
 	public readonly List<CurrencyWarningNode> NodeList = [];
-
-	internal static string CurrencyNodeConfigPath => Path.Combine(Service.PluginInterface.ConfigDirectory.FullName, "CurrencyNode.style.json");
 
 	public OverlayListNode() {
 		listNode = new ListBoxNode {
@@ -112,7 +109,7 @@ public class OverlayListNode : SimpleComponentNode {
 				Tooltip = "Overlay from CurrencyAlert plugin",
 			};
 			
-			newWarningNode.Load(CurrencyNodeConfigPath);
+			newWarningNode.Load();
 			newWarningNode.AddEvent(AddonEventType.MouseClick, OpenConfigurationWindow);
 			
 			listNode.AddNode(newWarningNode);
@@ -130,7 +127,4 @@ public class OverlayListNode : SimpleComponentNode {
 
 	private void OpenConfigurationWindow(AddonEventData _)
 		=> System.ConfigurationWindow.UnCollapseOrToggle();
-
-	public void SaveCurrencyWarningNode()
-		=> NodeList.FirstOrDefault()?.Save(CurrencyNodeConfigPath);
 }

@@ -447,11 +447,10 @@ public class CurrencyNodeSettingsTab : ITabItem {
         var listNode = System.OverlayController.OverlayListNode;
         if (listNode is null) return;
 
-        var firstNode = listNode.NodeList.FirstOrDefault();
-        if (firstNode is null) return;
+        var sampleNode = System.OverlayController.SampleNode;
                 
         ImGuiTweaks.Header("Currency Node Overlay Style");
-        DrawSimpleModeConfig(firstNode, listNode);
+        DrawSimpleModeConfig(sampleNode, listNode);
     }
 
     private void DrawSimpleModeConfig(CurrencyWarningNode firstNode, OverlayListNode overlayNode) {
@@ -528,7 +527,7 @@ public class CurrencyNodeSettingsTab : ITabItem {
 
     private void ApplyAll(CurrencyWarningNode referenceNode, OverlayListNode overlayListNode) {
         foreach (var node in overlayListNode.NodeList) {
-            node.Load(referenceNode);
+            node.Load(referenceNode, "Position", "Size");
             node.RecalculateLayout();
         }
     }
