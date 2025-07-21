@@ -29,7 +29,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
 
     protected override List<TrackedCurrency> Options => System.Config.Currencies;
     
-    protected override float SelectionListWidth { get; set; } = 150.0f;
+    protected override float SelectionListWidth => 150.0f;
     
     protected override float SelectionItemHeight => 20.0f;
     
