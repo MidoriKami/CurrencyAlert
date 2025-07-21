@@ -88,6 +88,11 @@ public class OverlayListNode : SimpleComponentNode {
 		set => listNode.FirstItemSpacing = value;
 	}
 
+	public bool EnableListEvents {
+		get => listNode.EnableEventFlags;
+		set => listNode.EnableEventFlags = value;
+	}
+
 	public void UpdateWarnings(List<TrackedCurrency> activeWarnings) {
 		// Get a list of warnings that we need to remove
 		var oldWarnings = NodeList.Where(node => activeWarnings.All(warning => warning != node.Currency)).ToList();
@@ -122,7 +127,7 @@ public class OverlayListNode : SimpleComponentNode {
 			node.RecalculateLayout();
 		}
 
-		listNode.EventFlagsSet = NodeList.Count is 0;
+		listNode.EnableEventFlags = NodeList.Count is 0 && !System.Config.DisableInteraction;
 		listNode.RecalculateLayout();
 	}
 

@@ -9,6 +9,7 @@ public class Configuration : IPluginConfiguration {
 
     public List<TrackedCurrency> Currencies = [];
     public bool HideInDuties = false;
+    public bool DisableInteraction = false;
 
     public int Version { get; set; } = 7;
 

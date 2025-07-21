@@ -6,6 +6,7 @@ using System.Numerics;
 using CurrencyAlert.Classes;
 using Dalamud.Game.Text;
 using Dalamud.Interface;
+using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
@@ -293,7 +294,15 @@ public class ListNodeSettingsTab : ITabItem {
         var listNode = System.OverlayController.OverlayListNode;
         if (listNode is null) return;
                 
-        ImGuiTweaks.Header("Resize/Reposition");
+        ImGuiTweaks.Header("General Settings");
+
+        var enable = listNode.IsVisible;
+        ImGuiTweaks.SetFullWidth();
+        if (ImGui.Checkbox("Enable", ref enable)) {
+            listNode.IsVisible = enable;
+        }
+
+        ImGuiHelpers.ScaledDummy(5.0f);
 
         var enableMoving = listNode.EnableMoving;
         if (ImGui.Checkbox("Allow Moving", ref enableMoving)) {
@@ -304,6 +313,15 @@ public class ListNodeSettingsTab : ITabItem {
         if (ImGui.Checkbox("Allow Resizing", ref enableResizing)) {
             listNode.EnableResizing = enableResizing;
         }
+        
+        ImGuiHelpers.ScaledDummy(5.0f);
+
+        if (ImGui.Checkbox("Disable Interaction", ref System.Config.DisableInteraction)) {
+            listNode.EnableListEvents = !System.Config.DisableInteraction;
+        }
+        ImGuiComponents.HelpMarker("Disables the tooltip 'Overlay from CurrencyAlert Plugin'\n" +
+                                   "and disables click interactability on the main list node\n\n" +
+                                   "Does not effect individual warning nodes");
         
         ImGuiTweaks.Header("Warning List Overlay Style");
         DrawSimpleModeConfig(listNode);
@@ -417,16 +435,6 @@ public class ListNodeSettingsTab : ITabItem {
         ImGuiTweaks.SetFullWidth();
         if (ImGui.Checkbox("##BorderVisible", ref border)) {
             listNode.ShowBorder = border;
-        }
-        
-        ImGui.TableNextColumn();
-        ImGui.Text("Enable");
-
-        ImGui.TableNextColumn();
-        var enable = listNode.IsVisible;
-        ImGuiTweaks.SetFullWidth();
-        if (ImGui.Checkbox("##Enable", ref enable)) {
-            listNode.IsVisible = enable;
         }
     }
 }
