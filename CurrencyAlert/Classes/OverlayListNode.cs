@@ -56,11 +56,8 @@ public class OverlayListNode : SimpleComponentNode {
 	}
 
 	public LayoutOrientation LayoutOrientation {
-		get;
-		set {
-			field = value;
-			listNode.LayoutOrientation = value;
-		}
+		get => listNode.LayoutOrientation;
+		set => listNode.LayoutOrientation = value;
 	}
 
 	public float ItemSpacing {
