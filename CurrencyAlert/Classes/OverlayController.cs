@@ -54,11 +54,7 @@ public unsafe class OverlayController : NameplateAddonController {
     public void Update() {
         if (OverlayListNode is null) return;
 
-        OverlayListNode.IsVisible = System.Config.HideInDuties switch {
-            true when Service.Condition.IsBoundByDuty() => false,
-            true when !Service.Condition.IsBoundByDuty() => true,
-            _ => OverlayListNode.IsVisible,
-        };
+        OverlayListNode.IsVisible = System.Config.OverlayEnabled && !(Service.Condition.IsBoundByDuty() && System.Config.HideInDuties);
 
         var activeWarnings = System.Config.Currencies
             .Where(currency => currency is { HasWarning: true, Enabled: true, ShowInOverlay: true })

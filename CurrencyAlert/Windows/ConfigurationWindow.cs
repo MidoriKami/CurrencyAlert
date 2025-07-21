@@ -296,10 +296,9 @@ public class ListNodeSettingsTab : ITabItem {
                 
         ImGuiTweaks.Header("General Settings");
 
-        var enable = listNode.IsVisible;
         ImGuiTweaks.SetFullWidth();
-        if (ImGui.Checkbox("Enable", ref enable)) {
-            listNode.IsVisible = enable;
+        if (ImGui.Checkbox("Enable", ref System.Config.OverlayEnabled)) {
+            listNode.IsVisible = System.Config.OverlayEnabled;
         }
 
         ImGuiHelpers.ScaledDummy(5.0f);
