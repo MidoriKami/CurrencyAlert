@@ -71,6 +71,7 @@ public class CurrencyWarningNode : SimpleComponentNode {
         currencyIcon.IconId = Currency.IconId;
         warningText.Text = Currency.ShowItemName ? $"{Currency.Name} {Currency.WarningText}" : $"{Currency.WarningText}";
         currencyIcon.ItemCount = Currency.CurrentCount;
+        IsVisible = true;
         
         RecalculateLayout();
     }
