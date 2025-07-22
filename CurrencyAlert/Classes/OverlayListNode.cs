@@ -19,7 +19,7 @@ public class OverlayListNode : SimpleComponentNode {
 		listNode = new ListBoxNode {
 			NodeId = 4,
 			LayoutAnchor = LayoutAnchor.TopLeft,
-			IsVisible = true,
+			IsVisible = System.Config.OverlayEnabled,
 			FirstItemSpacing = 10.0f,
 			ItemSpacing = 10.0f,
 			ClipListContents = true,
