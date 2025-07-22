@@ -453,7 +453,7 @@ public class CurrencyNodeSettingsTab : ITabItem {
         DrawSimpleModeConfig(sampleNode, listNode);
     }
 
-    private void DrawSimpleModeConfig(CurrencyWarningNode firstNode, OverlayListNode overlayNode) {
+    private void DrawSimpleModeConfig(CurrencyWarningNode sampleNode, OverlayListNode overlayNode) {
         using var table = ImRaii.Table("simple_mode_table", 2);
         if (!table) return;
         
@@ -466,63 +466,63 @@ public class CurrencyNodeSettingsTab : ITabItem {
         ImGui.Text("Text Color");
         
         ImGui.TableNextColumn();
-        var textColor = firstNode.TextColor;
+        var textColor = sampleNode.TextColor;
         ImGuiTweaks.SetFullWidth();
         if (ImGui.ColorEdit4("##TextColor", ref textColor, ImGuiColorEditFlags.AlphaPreviewHalf)) {
-            firstNode.TextColor = textColor;
+            sampleNode.TextColor = textColor;
         }
         
         ImGui.TableNextColumn();
         ImGui.Text("Text Font");
         
         ImGui.TableNextColumn();
-        var textFont = firstNode.LabelFont;
+        var textFont = sampleNode.LabelFont;
         ImGuiTweaks.SetFullWidth();
         if (ComboHelper.EnumCombo("##TextFont", ref textFont)) {
-            firstNode.LabelFont = textFont;
+            sampleNode.LabelFont = textFont;
         }
 
         ImGui.TableNextColumn();
         ImGui.Text("Text Size");
         
         ImGui.TableNextColumn();
-        var textSize = firstNode.TextSize;
+        var textSize = sampleNode.TextSize;
         ImGuiTweaks.SetFullWidth();
         if (ImGui.InputInt("##TextSize", ref textSize)) {
-            firstNode.TextSize = textSize;
+            sampleNode.TextSize = textSize;
         }
         
         ImGui.TableNextColumn();
         ImGui.Text("Show Icon");
         
         ImGui.TableNextColumn();
-        var showIcon = firstNode.ShowIcon;
+        var showIcon = sampleNode.ShowIcon;
         ImGuiTweaks.SetFullWidth();
         if (ImGui.Checkbox("##ShowIcon", ref showIcon)) {
-            firstNode.ShowIcon = showIcon;
+            sampleNode.ShowIcon = showIcon;
         }
         
         ImGui.TableNextColumn();
         ImGui.Text("Show Text");
         
         ImGui.TableNextColumn();
-        var showText = firstNode.ShowText;
+        var showText = sampleNode.ShowText;
         ImGuiTweaks.SetFullWidth();
         if (ImGui.Checkbox("##ShowText", ref showText)) {
-            firstNode.ShowText = showText;
+            sampleNode.ShowText = showText;
         }
         
         ImGui.TableNextColumn();
         ImGui.Text("Show Item Count");
 
         ImGui.TableNextColumn();
-        var showItemCount = firstNode.ShowItemCount;
+        var showItemCount = sampleNode.ShowItemCount;
         ImGuiTweaks.SetFullWidth();
         if (ImGui.Checkbox("##ShowItemCount", ref showItemCount)) {
-            firstNode.ShowItemCount = showItemCount;
+            sampleNode.ShowItemCount = showItemCount;
         }
         
-        ApplyAll(firstNode, overlayNode);
+        ApplyAll(sampleNode, overlayNode);
     }
 
     private void ApplyAll(CurrencyWarningNode referenceNode, OverlayListNode overlayListNode) {
