@@ -254,11 +254,15 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
         }
     }
 
-    public override void OnClose()
-        => System.OverlayController.Save();
+    public override void OnClose() {
+        System.OverlayController.Save();
+        System.Config.Save();
+    }
 
-    public override void OnTabChanged()
-        => System.OverlayController.Save();
+    public override void OnTabChanged() {
+        System.OverlayController.Save();
+        System.Config.Save();
+    }
 }
 
 public class GeneralSettingsTab : ITabItem {
