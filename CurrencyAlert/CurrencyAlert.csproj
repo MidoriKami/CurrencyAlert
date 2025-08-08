@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Dalamud.NET.Sdk/13.0.0">
     <PropertyGroup>
         <PackageProjectUrl>https://github.com/MidoriKami/CurrencyAlert.git</PackageProjectUrl>
-        <Version>2.2.2.2</Version>
+        <Version>2.2.2.3</Version>
         <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
