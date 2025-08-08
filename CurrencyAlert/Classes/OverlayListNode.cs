@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Dalamud.Game.Addon.Events;
+using Dalamud.Game.Addon.Events.EventDataTypes;
 using KamiToolKit.Classes;
 using KamiToolKit.Nodes;
 using Newtonsoft.Json;

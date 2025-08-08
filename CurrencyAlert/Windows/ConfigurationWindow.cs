@@ -4,12 +4,12 @@ using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using CurrencyAlert.Classes;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Game.Text;
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
 using KamiLib.Classes;
 using KamiLib.CommandManager;
 using KamiLib.Window;
@@ -50,7 +50,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
         // This only happens between expansion release and the release of savage, so this won't be relevant again for 2-3 years.
         if (option is { ItemId: 0, Type: CurrencyType.LimitedTomestone }) {
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3.0f * ImGuiHelpers.GlobalScale);
-            ImGui.Image(Service.TextureProvider.GetFromGameIcon(60071).GetWrapOrEmpty().ImGuiHandle, ImGuiHelpers.ScaledVector2(24.0f));
+            ImGui.Image(Service.TextureProvider.GetFromGameIcon(60071).GetWrapOrEmpty().Handle, ImGuiHelpers.ScaledVector2(24.0f));
 
             ImGui.SameLine();
             ImGui.AlignTextToFramePadding();
@@ -61,7 +61,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
 
         if (option is { Name: var name, Icon: { } icon }) {
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3.0f * ImGuiHelpers.GlobalScale);
-            ImGui.Image(icon.ImGuiHandle, ImGuiHelpers.ScaledVector2(24.0f));
+            ImGui.Image(icon.Handle, ImGuiHelpers.ScaledVector2(24.0f));
 
             ImGui.SameLine();
             ImGui.AlignTextToFramePadding();
@@ -93,7 +93,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
 
             var areaStart = ImGui.GetCursorPos();
             ImGui.SetCursorPosX(region.X / 2.0f - minDimension / 2.0f);
-            ImGui.Image(Service.TextureProvider.GetFromGameIcon(60071).GetWrapOrEmpty().ImGuiHandle, new Vector2(minDimension), Vector2.Zero, Vector2.One, Vector4.One with {
+            ImGui.Image(Service.TextureProvider.GetFromGameIcon(60071).GetWrapOrEmpty().Handle, new Vector2(minDimension), Vector2.Zero, Vector2.One, Vector4.One with {
                 W = 0.10f,
             });
             ImGui.SetCursorPos(areaStart);
@@ -109,7 +109,7 @@ public class ConfigurationWindow : TabbedSelectionWindow<TrackedCurrency> {
 
             var areaStart = ImGui.GetCursorPos();
             ImGui.SetCursorPosX(region.X / 2.0f - minDimension / 2.0f);
-            ImGui.Image(currency.Icon.ImGuiHandle, new Vector2(minDimension), Vector2.Zero, Vector2.One, Vector4.One with {
+            ImGui.Image(currency.Icon.Handle, new Vector2(minDimension), Vector2.Zero, Vector2.One, Vector4.One with {
                 W = 0.10f,
             });
             ImGui.SetCursorPos(areaStart);
